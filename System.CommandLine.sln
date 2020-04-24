@@ -56,11 +56,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.CommandLine.Hosting"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.CommandLine.Hosting.Tests", "src\System.CommandLine.Hosting.Tests\System.CommandLine.Hosting.Tests.csproj", "{39483140-BC26-4CAD-BBAE-3DC76C2F16CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.CommandLine.Analyzer", "src\System.CommandLine.Analyzer\System.CommandLine.Analyzer\System.CommandLine.Analyzer.csproj", "{498E4772-7E43-4547-90D2-59F076981351}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.CommandLine.Analyzer", "src\System.CommandLine.Analyzer\System.CommandLine.Analyzer.csproj", "{498E4772-7E43-4547-90D2-59F076981351}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.CommandLine.Analyzer.Test", "src\System.CommandLine.Analyzer\System.CommandLine.Analyzer.Test\System.CommandLine.Analyzer.Test.csproj", "{C8F6658E-66EF-4641-B4C0-DD9E84B3D667}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.CommandLine.Analyzer.Vsix", "src\System.CommandLine.Analyzer\System.CommandLine.Analyzer.Vsix\System.CommandLine.Analyzer.Vsix.csproj", "{3C43EF3C-53E9-4625-9CD8-36D67BCFE6C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.CommandLine.Analyzer.Test", "src\System.CommandLine.Analyzer.Test\System.CommandLine.Analyzer.Test.csproj", "{C8F6658E-66EF-4641-B4C0-DD9E84B3D667}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -95,7 +95,7 @@ namespace System.CommandLine.Analyzer.Test
                         Argument = new Argument<string>()
                     });
                 
-                command.Handler = CommandHandler.Create<string>([|name2|] => { });
+                command.Handler = CommandHandler.Create<string>($$name2 => { });
             }
         }
     }";

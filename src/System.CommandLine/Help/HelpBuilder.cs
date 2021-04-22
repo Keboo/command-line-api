@@ -141,23 +141,15 @@ namespace System.CommandLine.Help
                 var arguments = command.Arguments.Where(x => !x.IsHidden).ToList();
                 foreach (IArgument argument in arguments)
                 {
-                    string argumentDescriptor = GetArgumentDescriptor(argument);
+                    string argumentDescriptor = GetArgumentName(argument);
 
-                    yield return new HelpItem(argumentDescriptor, string.Join(" ", GetArgumentDescription(command, argument)));
-                }
-            }
+                    string description = argument.Description ?? "";
 
-            IEnumerable<string> GetArgumentDescription(IIdentifierSymbol parent, IArgument argument)
-            {
-                string? description = argument.Description;
-                if (!string.IsNullOrWhiteSpace(description))
-                {
-                    yield return description!;
-                }
+                    string? defaultValue = GetArgumentDefaultValue(command, argument, true);
 
-                if (argument.HasDefaultValue)
-                {
-                    yield return $"[{GetArgumentDefaultValue(parent, argument, true)}]";
+                    string? allowedValue = GetArgumentAllowedValues(argument);
+
+                    yield return new HelpItem(argumentDescriptor, description, allowedValue, defaultValue);
                 }
             }
         }
@@ -290,23 +282,23 @@ namespace System.CommandLine.Help
             if (items.Length == 0) return;
             int windowWidth = MaxWidth;
 
-            int firstColumnWidth = items.Select(x => x.Descriptor.Length).Max();
-            int secondColumnWidth = items.Select(x => x.Description.Length).Max();
+            int firstColumnWidth = items.Select(x => GetFirstColumnWidth(x)).Max();
+            int secondColumnWidth = items.Select(x => GetSecondColumnWidth(x)).Max();
 
             if (firstColumnWidth + secondColumnWidth + Indent.Length + Indent.Length > windowWidth)
             {
                 int firstColumnMaxWidth = windowWidth / 2 - Indent.Length;
                 if (firstColumnWidth > firstColumnMaxWidth)
                 {
-                    firstColumnWidth = items.SelectMany(x => WrapItem(x.Descriptor, firstColumnMaxWidth).Select(x => x.Length)).Max();
+                    firstColumnWidth = items.SelectMany(x => WrapItem(x.Name, firstColumnMaxWidth).Select(x => x.Length)).Max();
                 }
                 secondColumnWidth = windowWidth - firstColumnWidth - Indent.Length - Indent.Length;
             }
 
-            foreach (var (descriptor, description) in items)
+            foreach (var item in items)
             {
-                IEnumerable<string> descriptorParts = WrapItem(descriptor, firstColumnWidth);
-                IEnumerable<string> descriptionParts = WrapItem(description, secondColumnWidth);
+                IEnumerable<string> descriptorParts = WrapItem(GetFirstColumnContents(item), firstColumnWidth);
+                IEnumerable<string> descriptionParts = WrapItem(item.Description, secondColumnWidth);
 
                 foreach (var (first, second) in ZipWithEmpty(descriptorParts, descriptionParts))
                 {
@@ -335,6 +327,45 @@ namespace System.CommandLine.Help
                     yield return (hasFirst ? enum1.Current : "", hasSecond ? enum2.Current : "");
                 }
             }
+
+            static string GetFirstColumnContents(HelpItem helpItem)
+            {
+                return string.Join(Environment.NewLine, GetItems(helpItem));
+
+                static IEnumerable<string> GetItems(HelpItem helpItem)
+                {
+                    yield return helpItem.Name;
+                    if (!string.IsNullOrWhiteSpace(helpItem.AllowedValues))
+                    {
+                        yield return $"{Indent}{helpItem.AllowedValues}";
+                    }
+                    if (!string.IsNullOrWhiteSpace(helpItem.DefaultValue))
+                    {
+                        yield return $"{Indent}{helpItem.DefaultValue}";
+                    }
+                }
+            }
+
+            
+            static int GetFirstColumnWidth(HelpItem helpItem)
+            {
+                return GetLineLengths(helpItem).Max();
+                static IEnumerable<int> GetLineLengths(HelpItem helpItem)
+                {
+                    yield return helpItem.Name.Length;
+                    if (!string.IsNullOrWhiteSpace(helpItem.AllowedValues))
+                    {
+                        yield return helpItem.AllowedValues!.Length + Indent.Length;
+                    }
+                    if (!string.IsNullOrWhiteSpace(helpItem.DefaultValue))
+                    {
+                        yield return helpItem.DefaultValue!.Length + Indent.Length;
+                    }
+                }
+            }
+
+            static int GetSecondColumnWidth(HelpItem helpItem) 
+                => helpItem.Description.Length;
         }
 
         private static IEnumerable<string> WrapItem(string item, int maxWidth)
@@ -406,7 +437,7 @@ namespace System.CommandLine.Help
                 {
                     if (!argument.IsHidden)
                     {
-                        var argumentDescriptor = GetArgumentDescriptor(argument);
+                        var argumentDescriptor = GetArgumentName(argument);
                         if (!string.IsNullOrWhiteSpace(argumentDescriptor))
                         {
                             descriptor += $" {argumentDescriptor}";
@@ -421,7 +452,7 @@ namespace System.CommandLine.Help
                 }
             }
 
-            return new HelpItem(descriptor, GetDescription(symbol));
+            return new HelpItem(descriptor, GetDescription(symbol), "", "");
         }
 
         protected string GetDescription(IIdentifierSymbol symbol)
@@ -456,8 +487,10 @@ namespace System.CommandLine.Help
             }
         }
 
-        private string GetArgumentDefaultValue(IIdentifierSymbol parent, IArgument argument, bool displayArgumentName)
+        private string? GetArgumentDefaultValue(IIdentifierSymbol parent, IArgument argument, bool displayArgumentName)
         {
+            if (!argument.HasDefaultValue) return null;
+
             string? defaultValue;
             if (Customizations.TryGetValue(parent, out Customization customization) &&
                 customization.GetDefaultValue?.Invoke() is { } parentSetDefaultValue)
@@ -489,7 +522,17 @@ namespace System.CommandLine.Help
             return $"{name}: {defaultValue}";
         }
 
-        protected string GetArgumentDescriptor(IArgument argument)
+        private string? GetArgumentAllowedValues(IArgument argument)
+        {
+            string?[] suggestions = argument.GetSuggestions().ToArray();
+            if (suggestions.Length > 0)
+            {
+                return $"allowed: {string.Join("|", suggestions)}";
+            }
+            return null;
+        }
+
+        protected string GetArgumentName(IArgument argument)
         {
             if (Customizations.TryGetValue(argument, out Customization customization) &&
                 customization.GetDescriptor?.Invoke() is { } setDescriptor)
@@ -497,28 +540,13 @@ namespace System.CommandLine.Help
                 return setDescriptor;
             }
 
-            if (argument.ValueType == typeof(bool) ||
-                argument.ValueType == typeof(bool?))
+            string name = argument.Name;
+            
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                return "";
+                return $"<{name}>";
             }
-
-            string descriptor;
-            var suggestions = argument.GetSuggestions().ToArray();
-            if (suggestions.Length > 0)
-            {
-                descriptor = string.Join("|", suggestions);
-            }
-            else
-            {
-                descriptor = argument.Name;
-            }
-
-            if (!string.IsNullOrWhiteSpace(descriptor))
-            {
-                return $"<{descriptor}>";
-            }
-            return descriptor;
+            return name;
         }
 
         private class Customization

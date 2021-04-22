@@ -7,19 +7,29 @@ namespace System.CommandLine.Help
 {
     public class HelpItem : IEquatable<HelpItem?>
     {
-        public string Descriptor { get; }
+        public string Name { get; }
         public string Description { get; }
+        public string? AllowedValues { get; }
+        public string? DefaultValue { get; }
 
-        public HelpItem(string descriptor, string description)
+        public HelpItem(string name, string description, string? allowedValues, string? defaultValue)
         {
-            Descriptor = descriptor;
+            Name = name;
             Description = description;
+            AllowedValues = allowedValues;
+            DefaultValue = defaultValue;
         }
 
-        public void Deconstruct(out string descriptor, out string description)
+        public void Deconstruct(
+            out string name, 
+            out string description,
+            out string? allowedValues,
+            out string? defaultValue)
         {
-            descriptor = Descriptor;
+            name = Name;
             description = Description;
+            allowedValues = AllowedValues;
+            defaultValue = DefaultValue;
         }
 
         public override bool Equals(object? obj)
@@ -30,15 +40,19 @@ namespace System.CommandLine.Help
         public bool Equals(HelpItem? other)
         {
             return other != null &&
-                   Descriptor == other.Descriptor &&
-                   Description == other.Description;
+                   Name == other.Name &&
+                   Description == other.Description &&
+                   AllowedValues == other.AllowedValues &&
+                   DefaultValue == other.DefaultValue;
         }
 
         public override int GetHashCode()
         {
             int hashCode = -244751520;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Descriptor);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Description);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string?>.Default.GetHashCode(AllowedValues);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string?>.Default.GetHashCode(DefaultValue);
             return hashCode;
         }
 

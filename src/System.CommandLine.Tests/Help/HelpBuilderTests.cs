@@ -493,6 +493,30 @@ namespace System.CommandLine.Tests.Help
         }
 
         [Fact]
+        public void Arguments_section_displays_allowed_values_if_provided()
+        {
+            var command = new Command("the-command", "Help text from description")
+            {
+                new Argument
+                {
+                    Arity = ArgumentArity.ExactlyOne,
+                    Name = "the-arg",
+                    Description = "Help text from HelpDetail"
+                }.AddSuggestions("1", "2", "tunafish")
+            };
+
+            var expected =
+                $"Arguments:{NewLine}" +
+                $"{_indentation}<the-arg>              {_columnPadding}Help text from HelpDetail{NewLine}" +
+                $"{_indentation}{_indentation}allowed: 1|2|tunafish";
+
+            _helpBuilder.Write(command);
+
+            _console.Out.ToString().Should().Contain(expected);
+        }
+
+
+        [Fact]
         public void Arguments_section_does_not_contain_hidden_argument()
         {
             var command = new Command("the-command");

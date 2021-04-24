@@ -154,30 +154,6 @@ namespace System.CommandLine
 
             return _defaultValueFactory.Invoke(argumentResult);
         }
-
-        /// <summary>
-        /// Sets the default value for the argument.
-        /// </summary>
-        /// <param name="value">The default value for the argument.</param>
-        public void SetDefaultValue(object? value)
-        {
-            SetDefaultValueFactory(() => value);
-        }
-
-        /// <summary>
-        /// Sets a delegate to invoke when the default value for the argument is required.
-        /// </summary>
-        /// <param name="getDefaultValue">The delegate to invoke to return the default value.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="getDefaultValue"/> is null.</exception>
-        public void SetDefaultValueFactory(Func<object?> getDefaultValue)
-        {
-            if (getDefaultValue is null)
-            {
-                throw new ArgumentNullException(nameof(getDefaultValue));
-            }
-
-            SetDefaultValueFactory(_ => getDefaultValue());
-        }
         
         /// <summary>
         /// Sets a delegate to invoke when the default value for the argument is required.

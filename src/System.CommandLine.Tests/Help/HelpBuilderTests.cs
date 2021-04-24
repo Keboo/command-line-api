@@ -515,6 +515,53 @@ namespace System.CommandLine.Tests.Help
             _console.Out.ToString().Should().Contain(expected);
         }
 
+        [Fact]
+        public void Arguments_section_displays_default_value_if_provided()
+        {
+            var command = new Command("the-command", "Help text from description")
+            {
+                new Argument
+                {
+                    Arity = ArgumentArity.ExactlyOne,
+                    Name = "the-arg",
+                    Description = "Help text from HelpDetail"
+                }.SetDefaultValue("some default")
+            };
+
+            var expected =
+                $"Arguments:{NewLine}" +
+                $"{_indentation}<the-arg>              {_columnPadding}Help text from HelpDetail{NewLine}" +
+                $"{_indentation}{_indentation}default: some default";
+
+            _helpBuilder.Write(command);
+
+            _console.Out.ToString().Should().Contain(expected);
+        }
+
+        [Fact]
+        public void Arguments_section_displays_default_value_and_suggestions_if_provided()
+        {
+            var command = new Command("the-command", "Help text from description")
+            {
+                new Argument
+                {
+                    Arity = ArgumentArity.ExactlyOne,
+                    Name = "the-arg",
+                    Description = "Help text from HelpDetail"
+                }.SetDefaultValue("some default")
+                .AddSuggestions("1", "2", "3")
+            };
+
+            var expected =
+                $"Arguments:{NewLine}" +
+                $"{_indentation}<the-arg>              {_columnPadding}Help text from HelpDetail{NewLine}" +
+                $"{_indentation}{_indentation}allowed: 1|2|3{NewLine}" +
+                $"{_indentation}{_indentation}default: some default";
+
+            _helpBuilder.Write(command);
+
+            _console.Out.ToString().Should().Contain(expected);
+        }
 
         [Fact]
         public void Arguments_section_does_not_contain_hidden_argument()
@@ -739,7 +786,8 @@ namespace System.CommandLine.Tests.Help
 
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}{_columnPadding}{description}";
+                $"{_indentation}<{type.Name.ToLowerInvariant()}>           {_columnPadding}{description}{NewLine}" +
+                $"{_indentation}{_indentation}allowed: False|True";
 
             _console.Out.ToString().Should().Contain(expected);
         }
@@ -766,7 +814,8 @@ namespace System.CommandLine.Tests.Help
 
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}<Read|ReadWrite|Write>{_columnPadding}{description}";
+                $"{_indentation}<{type.Name.ToLowerInvariant()}>                   {_columnPadding}{description}{NewLine}" +
+                $"{_indentation}{_indentation}allowed: Read|ReadWrite|Write";
 
             _console.Out.ToString().Should().Contain(expected);
         }
@@ -808,29 +857,12 @@ namespace System.CommandLine.Tests.Help
 
             helpBuilder.Write(command);
 
-            _console.Out.ToString().Should().Contain($"--opt <Read|ReadWrite|Write>{_columnPadding}{description}");
-        }
+            var expected =
+                $"Options:{NewLine}" +
+                $"{_indentation}--opt <opt>{_columnPadding}{description}{NewLine}" +
+                $"{_indentation}{_indentation}allowed: Read|ReadWrite|Write{NewLine}";
 
-        [Fact]
-        public void Help_describes_default_value_for_defaultable_argument()
-        {
-            var argument = new Argument
-            {
-                Name = "the-arg",
-                Description = "Help text from HelpDetail",
-            };
-            argument.SetDefaultValue("the-arg-value");
-
-            var command = new Command("the-command",
-                "Help text from description") { argument };
-
-            HelpBuilder helpBuilder = GetHelpBuilder(SmallMaxWidth);
-
-            helpBuilder.Write(command);
-
-            var help = _console.Out.ToString();
-
-            help.Should().Contain($"[default: the-arg-value]");
+            _console.Out.ToString().Should().Contain(expected);
         }
 
         [Fact]
@@ -862,8 +894,10 @@ namespace System.CommandLine.Tests.Help
 
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}<the-arg>      {_columnPadding}[default: the-arg-value]{NewLine}" +
-                $"{_indentation}<the-other-arg>{_columnPadding}[default: the-other-arg-value]{NewLine}";
+                $"{_indentation}<the-arg>{NewLine}" + 
+                $"{_indentation}{_indentation}default: the-arg-value{NewLine}" +
+                $"{_indentation}<the-other-arg>{NewLine}" +
+                $"{_indentation}{_indentation}default: the-other-arg-value{NewLine}";
 
             help.Should().Contain(expected);
         }
@@ -880,7 +914,8 @@ namespace System.CommandLine.Tests.Help
             _helpBuilder.Write(command);
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}<filter-size>{_columnPadding}[default: 0|2|4]{NewLine}{NewLine}";
+                $"{_indentation}<filter-size>{NewLine}" + 
+                $"{_indentation}{_indentation}default: 0|2|4{NewLine}";
 
             _console.Out.ToString().Should().Contain(expected);
         }
@@ -899,13 +934,14 @@ namespace System.CommandLine.Tests.Help
             _helpBuilder.Write(command);
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}<some-arg>{_columnPadding}[default: 42]{NewLine}{NewLine}";
+                $"{_indentation}<some-arg>{NewLine}" +
+                $"{_indentation}{_indentation}default: 42";
 
             _console.Out.ToString().Should().Contain(expected);
         }
 
         [Fact]
-        public void Command_arguments_can_customize_dedescriptor()
+        public void Command_arguments_can_customize_descriptor()
         {
             var argument = new Argument<string>("some-arg", getDefaultValue: () => "not 42");
             var command = new Command("the-command", "command help")
@@ -918,7 +954,8 @@ namespace System.CommandLine.Tests.Help
             _helpBuilder.Write(command);
             var expected =
                 $"Arguments:{NewLine}" +
-                $"{_indentation}some-other-arg{_columnPadding}[default: not 42]{NewLine}{NewLine}";
+                $"{_indentation}some-other-arg{NewLine}" +
+                $"{_indentation}{_indentation}default: not 42{NewLine}";
 
             _console.Out.ToString().Should().Contain(expected);
         }

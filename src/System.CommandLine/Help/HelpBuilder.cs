@@ -529,6 +529,10 @@ namespace System.CommandLine.Help
             {
                 return $"allowed: {string.Join("|", suggestions)}";
             }
+            if (argument.ValueType.IsEnum)
+            {
+                return $"allowed: {string.Join("|", Enum.GetNames(argument.ValueType))}";
+            }
             return null;
         }
 

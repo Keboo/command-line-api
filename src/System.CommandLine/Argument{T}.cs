@@ -46,7 +46,7 @@ namespace System.CommandLine
                 throw new ArgumentNullException(nameof(getDefaultValue));
             }
 
-            SetDefaultValueFactory(() => getDefaultValue());
+            this.SetDefaultValueFactory(() => getDefaultValue());
 
             Description = description;
         }
@@ -63,7 +63,7 @@ namespace System.CommandLine
                 throw new ArgumentNullException(nameof(getDefaultValue));
             }
 
-            SetDefaultValueFactory(() => getDefaultValue());
+            this.SetDefaultValueFactory(() => getDefaultValue());
         }
 
         /// <summary>

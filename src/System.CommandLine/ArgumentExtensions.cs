@@ -11,6 +11,40 @@ namespace System.CommandLine
 {
     public static class ArgumentExtensions
     {
+
+        /// <summary>
+        /// Sets the default value for the argument.
+        /// </summary>
+        /// <param name="value">The default value for the argument.</param>
+        public static TArgument SetDefaultValue<TArgument>(
+            this TArgument argument, 
+            object? value)
+            where TArgument : Argument
+        {
+            argument.SetDefaultValueFactory(() => value);
+            return argument;
+        }
+
+        /// <summary>
+        /// Sets a delegate to invoke when the default value for the argument is required.
+        /// </summary>
+        /// <param name="getDefaultValue">The delegate to invoke to return the default value.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="getDefaultValue"/> is null.</exception>
+        public static TArgument SetDefaultValueFactory<TArgument>(
+            this TArgument argument,
+            Func<object?> getDefaultValue)
+            where TArgument : Argument
+
+        {
+            if (getDefaultValue is null)
+            {
+                throw new ArgumentNullException(nameof(getDefaultValue));
+            }
+
+            argument.SetDefaultValueFactory(_ => getDefaultValue());
+            return argument;
+        }
+
         public static TArgument AddSuggestions<TArgument>(
             this TArgument argument,
             params string[] values)

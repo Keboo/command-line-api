@@ -9,23 +9,13 @@ namespace System.CommandLine
     {
         internal static IReadOnlyList<IArgument> Arguments(this ISymbol symbol)
         {
-            switch (symbol)
+            return symbol switch
             {
-                case IOption option:
-                    return new[]
-                    {
-                        option.Argument
-                    };
-                case ICommand command:
-                    return command.Arguments;
-                case IArgument argument:
-                    return new[]
-                    {
-                        argument
-                    };
-                default:
-                    throw new NotSupportedException();
-            }
+                IOption option => new[] { option.Argument },
+                ICommand command => command.Arguments,
+                IArgument argument => new[] { argument },
+                _ => throw new NotSupportedException(),
+            };
         }
 
         public static IEnumerable<string?> GetSuggestions(this ISymbol symbol, string? textToMatch = null)

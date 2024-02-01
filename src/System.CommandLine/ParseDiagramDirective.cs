@@ -1,5 +1,4 @@
-﻿using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
+﻿using System.CommandLine.Parsing;
 
 namespace System.CommandLine
 {
@@ -9,7 +8,7 @@ namespace System.CommandLine
     /// </summary>
     public sealed class DiagramDirective : CliDirective
     {
-        private CliAction? _action;
+        //private CliAction? _action;
 
         /// <summary>
         /// Writes a diagram of the parse result to the output.
@@ -19,11 +18,11 @@ namespace System.CommandLine
         }
 
         /// <inheritdoc />
-        public override CliAction? Action
-        {
-            get => _action ??= new ParseDiagramAction(ParseErrorReturnValue);
-            set => _action = value ?? throw new ArgumentNullException(nameof(value));
-        }
+        //public override CliAction? Action
+        //{
+        //    get => _action ??= new ParseDiagramAction(ParseErrorReturnValue);
+        //    set => _action = value ?? throw new ArgumentNullException(nameof(value));
+        //}
 
         /// <summary>
         /// Gets or sets the return value, which can be used as an exit code, when parsing encounters an error.

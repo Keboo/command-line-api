@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 
 namespace System.CommandLine
@@ -106,7 +105,7 @@ namespace System.CommandLine
         /// Gets or sets the <see cref="CliAction"/> for the Option. The handler represents the action
         /// that will be performed when the Option is invoked.
         /// </summary>
-        public virtual CliAction? Action { get; set; }
+        //public virtual CliAction? Action { get; set; }
 
         /// <inheritdoc />
         //public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)

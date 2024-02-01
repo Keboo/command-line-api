@@ -1,8 +1,6 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.CommandLine.Invocation;
-
 namespace System.CommandLine
 {
     /// <summary>
@@ -29,7 +27,7 @@ namespace System.CommandLine
         /// Gets or sets the <see cref="CliAction"/> for the Directive. The handler represents the action
         /// that will be performed when the Directive is invoked.
         /// </summary>
-        public virtual CliAction? Action { get; set; }
+        //public virtual CliAction? Action { get; set; }
 
         ///// <inheritdoc />
         //public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)

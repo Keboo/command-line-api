@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
-using System.CommandLine.Invocation;
 
 namespace System.CommandLine
 {
@@ -127,30 +126,30 @@ namespace System.CommandLine
         /// </summary>
         /// <returns>The exit code for the invocation.</returns>
         /// <remarks>The command line string input will be split into tokens as if it had been passed on the command line.</remarks>
-        public int Invoke(string commandLine)
-            => RootCommand.Parse(commandLine, this).Invoke();
+        //public int Invoke(string commandLine)
+        //    => RootCommand.Parse(commandLine, this).Invoke();
 
         /// <summary>
         /// Parses a command line string array and invokes the handler for the indicated command.
         /// </summary>
         /// <returns>The exit code for the invocation.</returns>
-        public int Invoke(string[] args)
-            => RootCommand.Parse(args, this).Invoke();
+        //public int Invoke(string[] args)
+        //    => RootCommand.Parse(args, this).Invoke();
 
         /// <summary>
         /// Parses a command line string value and invokes the handler for the indicated command.
         /// </summary>
         /// <returns>The exit code for the invocation.</returns>
         /// <remarks>The command line string input will be split into tokens as if it had been passed on the command line.</remarks>
-        public Task<int> InvokeAsync(string commandLine, CancellationToken cancellationToken = default)
-            => RootCommand.Parse(commandLine, this).InvokeAsync(cancellationToken);
+        //public Task<int> InvokeAsync(string commandLine, CancellationToken cancellationToken = default)
+        //    => RootCommand.Parse(commandLine, this).InvokeAsync(cancellationToken);
 
         /// <summary>
         /// Parses a command line string array and invokes the handler for the indicated command.
         /// </summary>
         /// <returns>The exit code for the invocation.</returns>
-        public Task<int> InvokeAsync(string[] args, CancellationToken cancellationToken = default)
-            => RootCommand.Parse(args, this).InvokeAsync(cancellationToken);
+        //public Task<int> InvokeAsync(string[] args, CancellationToken cancellationToken = default)
+        //    => RootCommand.Parse(args, this).InvokeAsync(cancellationToken);
 
         /// <summary>
         /// Throws an exception if the parser configuration is ambiguous or otherwise not valid.

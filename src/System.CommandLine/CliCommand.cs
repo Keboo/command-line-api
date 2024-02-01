@@ -3,7 +3,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -97,69 +96,69 @@ namespace System.CommandLine
         /// <para>Use one of the <see cref="SetAction(Action{ParseResult})" /> overloads to construct a handler.</para>
         /// <para>If the handler is not specified, parser errors will be generated for command line input that
         /// invokes this Command.</para></remarks>
-        public CliAction? Action { get; set; }
+        //public CliAction? Action { get; set; }
 
         /// <summary>
         /// Sets a synchronous action to be run when the command is invoked.
         /// </summary>
-        public void SetAction(Action<ParseResult> action)
-        {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+        //public void SetAction(Action<ParseResult> action)
+        //{
+        //    if (action is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(action));
+        //    }
 
-            Action = new AnonymousSynchronousCliAction(context =>
-            {
-                action(context);
-                return 0;
-            });
-        }
+        //    Action = new AnonymousSynchronousCliAction(context =>
+        //    {
+        //        action(context);
+        //        return 0;
+        //    });
+        //}
 
         /// <summary>
         /// Sets a synchronous action to be run when the command is invoked.
         /// </summary>
         /// <remarks>The value returned from the <paramref name="action"/> delegate can be used to set the process exit code.</remarks>
-        public void SetAction(Func<ParseResult, int> action)
-        {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+        //public void SetAction(Func<ParseResult, int> action)
+        //{
+        //    if (action is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(action));
+        //    }
 
-            Action = new AnonymousSynchronousCliAction(action);
-        }
+        //Action = new AnonymousSynchronousCliAction(action);
+        //}
 
         /// <summary>
         /// Sets an asynchronous action to be run when the command is invoked.
         /// </summary>
-        public void SetAction(Func<ParseResult, CancellationToken, Task> action)
-        {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+        //public void SetAction(Func<ParseResult, CancellationToken, Task> action)
+        //{
+        //    if (action is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(action));
+        //    }
 
-            Action = new AnonymousAsynchronousCliAction(async (context, cancellationToken) =>
-            {
-                await action(context, cancellationToken);
-                return 0;
-            });
-        }
+        //    Action = new AnonymousAsynchronousCliAction(async (context, cancellationToken) =>
+        //    {
+        //        await action(context, cancellationToken);
+        //        return 0;
+        //    });
+        //}
 
         /// <summary>
         /// Sets an asynchronous action when the command is invoked.
         /// </summary>
         /// <remarks>The value returned from the <paramref name="action"/> delegate can be used to set the process exit code.</remarks>
-        public void SetAction(Func<ParseResult, CancellationToken, Task<int>> action)
-        {
-            if (action is null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
+        //public void SetAction(Func<ParseResult, CancellationToken, Task<int>> action)
+        //{
+        //    if (action is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(action));
+        //    }
 
-            Action = new AnonymousAsynchronousCliAction(action);
-        }
+        //    Action = new AnonymousAsynchronousCliAction(action);
+        //}
 
         /// <summary>
         /// Adds a <see cref="CliArgument"/> to the command.

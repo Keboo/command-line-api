@@ -48,11 +48,11 @@ namespace System.CommandLine.Parsing
         {
             if (completeValidation)
             {
-                if (Command.Action is null && Command.HasSubcommands)
-                {
-                    SymbolResultTree.InsertFirstError(
-                        new ParseError(LocalizationResources.RequiredCommandWasNotProvided(), this));
-                }
+                //if (Command.Action is null && Command.HasSubcommands)
+                //{
+                //    SymbolResultTree.InsertFirstError(
+                //        new ParseError(LocalizationResources.RequiredCommandWasNotProvided(), this));
+                //}
 
                 if (Command.HasValidators)
                 {

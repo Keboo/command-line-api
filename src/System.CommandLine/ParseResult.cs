@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,8 +17,8 @@ namespace System.CommandLine
         private readonly CommandResult _rootCommandResult;
         private readonly IReadOnlyList<CliToken> _unmatchedTokens;
         //private CompletionContext? _completionContext;
-        private readonly CliAction? _action;
-        private readonly List<CliAction>? _preActions;
+        //private readonly CliAction? _action;
+        //private readonly List<CliAction>? _preActions;
 
         internal ParseResult(
             CliConfiguration configuration,
@@ -28,15 +27,16 @@ namespace System.CommandLine
             List<CliToken> tokens,
             List<CliToken>? unmatchedTokens,
             List<ParseError>? errors,
-            string? commandLineText = null,
-            CliAction? action = null,
-            List<CliAction>? preActions = null)
+            string? commandLineText = null//,
+            //CliAction? action = null,
+            //List<CliAction>? preActions = null
+            )
         {
             Configuration = configuration;
             _rootCommandResult = rootCommandResult;
             CommandResult = commandResult;
-            _action = action;
-            _preActions = preActions;
+            //_action = action;
+            //_preActions = preActions;
 
             // skip the root command when populating Tokens property
             if (tokens.Count > 1)
@@ -133,7 +133,7 @@ namespace System.CommandLine
             => RootCommandResult.GetValue<T>(name);
 
         /// <inheritdoc />
-        public override string ToString() => ParseDiagramAction.Diagram(this).ToString();
+        //public override string ToString() => ParseDiagramAction.Diagram(this).ToString();
 
         /// <summary>
         /// Gets the result, if any, for the specified argument.
@@ -226,51 +226,51 @@ namespace System.CommandLine
         /// </summary>
         /// <param name="cancellationToken">A token that can be used to cancel an invocation.</param>
         /// <returns>A task whose result can be used as a process exit code.</returns>
-        public Task<int> InvokeAsync(CancellationToken cancellationToken = default)
-            => InvocationPipeline.InvokeAsync(this, cancellationToken);
+        //public Task<int> InvokeAsync(CancellationToken cancellationToken = default)
+        //    => InvocationPipeline.InvokeAsync(this, cancellationToken);
 
         /// <summary>
         /// Invokes the appropriate command handler for a parsed command line input.
         /// </summary>
         /// <returns>A value that can be used as a process exit code.</returns>
-        public int Invoke()
-        {
-            var useAsync = false;
+        //public int Invoke()
+        //{
+        //    var useAsync = false;
 
-            if (Action is AsynchronousCliAction)
-            {
-                useAsync = true;
-            }
-            else if (PreActions is not null)
-            {
-                for (var i = 0; i < PreActions.Count; i++)
-                {
-                    var action = PreActions[i];
-                    if (action is AsynchronousCliAction)
-                    {
-                        useAsync = true;
-                        break;
-                    }
-                }
-            }
+        //    if (Action is AsynchronousCliAction)
+        //    {
+        //        useAsync = true;
+        //    }
+        //    else if (PreActions is not null)
+        //    {
+        //        for (var i = 0; i < PreActions.Count; i++)
+        //        {
+        //            var action = PreActions[i];
+        //            if (action is AsynchronousCliAction)
+        //            {
+        //                useAsync = true;
+        //                break;
+        //            }
+        //        }
+        //    }
 
-            if (useAsync)
-            {
-                return InvocationPipeline.InvokeAsync(this, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            else
-            {
-                return InvocationPipeline.Invoke(this);
-            }
-        }
+        //    if (useAsync)
+        //    {
+        //        return InvocationPipeline.InvokeAsync(this, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        //    }
+        //    else
+        //    {
+        //        return InvocationPipeline.Invoke(this);
+        //    }
+        //}
 
         /// <summary>
         /// Gets the <see cref="CliAction"/> for parsed result. The handler represents the action
         /// that will be performed when the parse result is invoked.
         /// </summary>
-        public CliAction? Action => _action ?? CommandResult.Command.Action;
+        //public CliAction? Action => _action ?? CommandResult.Command.Action;
 
-        internal IReadOnlyList<CliAction>? PreActions => _preActions;
+        //internal IReadOnlyList<CliAction>? PreActions => _preActions;
 
         private SymbolResult SymbolToComplete(int? position = null)
         {

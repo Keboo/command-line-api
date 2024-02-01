@@ -1,7 +1,6 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Linq;
 
@@ -12,7 +11,7 @@ namespace System.CommandLine
     /// </summary>
     public sealed class VersionOption : CliOption<bool>
     {
-        private CliAction? _action;
+        //private CliAction? _action;
 
         /// <summary>
         /// When added to a <see cref="CliCommand"/>, it enables the use of a <c>--version</c> option, which when specified in command line input will short circuit normal command handling and instead write out version information before exiting.
@@ -32,11 +31,11 @@ namespace System.CommandLine
         }
 
         /// <inheritdoc />
-        public override CliAction? Action
-        {
-            get => _action ??= new VersionOptionAction();
-            set => _action = value ?? throw new ArgumentNullException(nameof(value));
-        }
+        //public override CliAction? Action
+        //{
+        //    get => _action ??= new VersionOptionAction();
+        //    set => _action = value ?? throw new ArgumentNullException(nameof(value));
+        //}
 
         private void AddValidators()
         {
@@ -52,13 +51,13 @@ namespace System.CommandLine
 
         internal override bool Greedy => false;
 
-        private sealed class VersionOptionAction : SynchronousCliAction
-        {
-            public override int Invoke(ParseResult parseResult)
-            {
-                parseResult.Configuration.Output.WriteLine(CliRootCommand.ExecutableVersion);
-                return 0;
-            }
-        }
+        //private sealed class VersionOptionAction : SynchronousCliAction
+        //{
+        //    public override int Invoke(ParseResult parseResult)
+        //    {
+        //        parseResult.Configuration.Output.WriteLine(CliRootCommand.ExecutableVersion);
+        //        return 0;
+        //    }
+        //}
     }
 }

@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Invocation;
 
 namespace System.CommandLine.Parsing
 {
@@ -18,8 +17,8 @@ namespace System.CommandLine.Parsing
         private CommandResult _innermostCommandResult;
         private bool _isHelpRequested;
         private bool _isTerminatingDirectiveSpecified;
-        private CliAction? _primaryAction;
-        private List<CliAction>? _preActions;
+        //private CliAction? _primaryAction;
+        //private List<CliAction>? _preActions;
 
         public ParseOperation(
             List<CliToken> tokens,
@@ -62,24 +61,25 @@ namespace System.CommandLine.Parsing
                 Validate();
             }
 
-            if (_primaryAction is null)
-            {
-                if (_symbolResultTree.ErrorCount > 0)
-                {
-                    _primaryAction = new ParseErrorAction();
-                }
-            }
+            //if (_primaryAction is null)
+            //{
+            //    if (_symbolResultTree.ErrorCount > 0)
+            //    {
+            //        _primaryAction = new ParseErrorAction();
+            //    }
+            //}
 
-            return new (
+            return new(
                 _configuration,
                 _rootCommandResult,
                 _innermostCommandResult,
                 _tokens,
                 _symbolResultTree.UnmatchedTokens,
                 _symbolResultTree.Errors,
-                _rawInput,
-                _primaryAction,
-                _preActions);
+                _rawInput//,
+                //_primaryAction,
+                //_preActions);
+                );
         }
 
         private void ParseSubcommand()
@@ -185,27 +185,27 @@ namespace System.CommandLine.Parsing
 
             if (!_symbolResultTree.TryGetValue(option, out SymbolResult? symbolResult))
             {
-                if (option.Action is not null)
-                {
-                    // directives have a precedence over --help and --version
-                    if (!_isTerminatingDirectiveSpecified)
-                    {
-                        // TODO: ouch
-                        // if (option is HelpOption)
-                        // {
-                        //     _isHelpRequested = true;
-                        // }
+                //if (option.Action is not null)
+                //{
+                //    // directives have a precedence over --help and --version
+                //    if (!_isTerminatingDirectiveSpecified)
+                //    {
+                //        // TODO: ouch
+                //        // if (option is HelpOption)
+                //        // {
+                //        //     _isHelpRequested = true;
+                //        // }
 
-                        if (option.Action.Terminating)
-                        {
-                            _primaryAction = option.Action;
-                        }
-                        else
-                        {
-                            AddPreAction(option.Action);
-                        }
-                    }
-                }
+                //        if (option.Action.Terminating)
+                //        {
+                //            _primaryAction = option.Action;
+                //        }
+                //        else
+                //        {
+                //            AddPreAction(option.Action);
+                //        }
+                //    }
+                //}
 
                 optionResult = new OptionResult(
                     option,
@@ -331,30 +331,30 @@ namespace System.CommandLine.Parsing
                     result.AddValue(withoutBrackets.Slice(indexOfColon + 1).ToString());
                 }
 
-                if (directive.Action is not null)
-                {
-                    if (directive.Action.Terminating)
-                    {
-                        _primaryAction = directive.Action;
-                        _isTerminatingDirectiveSpecified = true;
-                    }
-                    else
-                    {
-                        AddPreAction(directive.Action);
-                    }
-                }
+                //if (directive.Action is not null)
+                //{
+                //    if (directive.Action.Terminating)
+                //    {
+                //        _primaryAction = directive.Action;
+                //        _isTerminatingDirectiveSpecified = true;
+                //    }
+                //    else
+                //    {
+                //        AddPreAction(directive.Action);
+                //    }
+                //}
             }
         }
 
-        private void AddPreAction(CliAction action)
-        {
-            if (_preActions is null)
-            {
-                _preActions = new();
-            }
+        //private void AddPreAction(CliAction action)
+        //{
+        //    if (_preActions is null)
+        //    {
+        //        _preActions = new();
+        //    }
 
-            _preActions.Add(action);
-        }
+        //    _preActions.Add(action);
+        //}
 
         private void AddCurrentTokenToUnmatched()
         {

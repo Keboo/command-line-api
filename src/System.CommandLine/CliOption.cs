@@ -2,10 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
-using System.Linq;
 
 namespace System.CommandLine
 {
@@ -72,7 +70,7 @@ namespace System.CommandLine
         /// <summary>
         /// Gets the list of completion sources for the option.
         /// </summary>
-        public List<Func<CompletionContext, IEnumerable<CompletionItem>>> CompletionSources => Argument.CompletionSources;
+        //public List<Func<CompletionContext, IEnumerable<CompletionItem>>> CompletionSources => Argument.CompletionSources;
 
         /// <summary>
         /// Gets a value that indicates whether multiple argument tokens are allowed for each option identifier token.
@@ -111,26 +109,26 @@ namespace System.CommandLine
         public virtual CliAction? Action { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
-        {
-            List<CompletionItem>? completions = null;
+        //public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
+        //{
+        //    List<CompletionItem>? completions = null;
 
-            foreach (var completion in Argument.GetCompletions(context))
-            {
-                if (completion.Label.ContainsCaseInsensitive(context.WordToComplete))
-                {
-                    (completions ??= new List<CompletionItem>()).Add(completion);
-                }
-            }
+        //    foreach (var completion in Argument.GetCompletions(context))
+        //    {
+        //        if (completion.Label.ContainsCaseInsensitive(context.WordToComplete))
+        //        {
+        //            (completions ??= new List<CompletionItem>()).Add(completion);
+        //        }
+        //    }
 
-            if (completions is null)
-            {
-                return Array.Empty<CompletionItem>();
-            }
+        //    if (completions is null)
+        //    {
+        //        return Array.Empty<CompletionItem>();
+        //    }
 
-            return completions
-                   .OrderBy(item => item.SortText.IndexOfCaseInsensitive(context.WordToComplete))
-                   .ThenBy(symbol => symbol.Label, StringComparer.OrdinalIgnoreCase);
-        }
+        //    return completions
+        //           .OrderBy(item => item.SortText.IndexOfCaseInsensitive(context.WordToComplete))
+        //           .ThenBy(symbol => symbol.Label, StringComparer.OrdinalIgnoreCase);
+        //}
     }
 }

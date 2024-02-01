@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Completions;
 using System.IO;
 using System.Reflection;
 
@@ -28,10 +27,10 @@ namespace System.CommandLine
         {
             // TODO: find solution
             // Options.Add(new HelpOption());
-            Options.Add(new VersionOption()); 
+            Options.Add(new VersionOption());
             Directives = new ChildSymbolList<CliDirective>(this)
             {
-                new SuggestDirective()
+                //new SuggestDirective()
             };
         }
      

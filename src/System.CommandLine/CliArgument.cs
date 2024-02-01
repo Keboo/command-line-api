@@ -4,8 +4,6 @@
 using System.Collections.Generic;
 using System.CommandLine.Binding;
 using System.CommandLine.Parsing;
-using System.CommandLine.Completions;
-using System.Linq;
 
 namespace System.CommandLine
 {
@@ -16,7 +14,7 @@ namespace System.CommandLine
     {
         private ArgumentArity _arity;
         private TryConvertArgument? _convertArguments;
-        private List<Func<CompletionContext, IEnumerable<CompletionItem>>>? _completionSources = null;
+        //TODO private List<Func<CompletionContext, IEnumerable<CompletionItem>>>? _completionSources = null;
         private List<Action<ArgumentResult>>? _validators = null;
 
         private protected CliArgument(string name) : base(name, allowWhitespace: true)
@@ -54,40 +52,40 @@ namespace System.CommandLine
         /// <summary>
         /// Gets the list of completion sources for the argument.
         /// </summary>
-        public List<Func<CompletionContext, IEnumerable<CompletionItem>>> CompletionSources
-        {
-            get
-            {
-                if (_completionSources is null)
-                {
-                    Type? valueType = ValueType;
-                    if (IsBoolean())
-                    {
-                        _completionSources = new ()
-                        {
-                            static _ => new CompletionItem[]
-                            {
-                                new(bool.TrueString),
-                                new(bool.FalseString)
-                            }
-                        };
-                    }
-                    else if (!valueType.IsPrimitive && (valueType.IsEnum || (valueType.TryGetNullableType(out valueType) && valueType.IsEnum)))
-                    {
-                        _completionSources = new()
-                        {
-                            _ => Enum.GetNames(valueType).Select(n => new CompletionItem(n))
-                        };
-                    }
-                    else
-                    {
-                        _completionSources = new();
-                    }
-                }
+        //public List<Func<CompletionContext, IEnumerable<CompletionItem>>> CompletionSources
+        //{
+        //    get
+        //    {
+        //        if (_completionSources is null)
+        //        {
+        //            Type? valueType = ValueType;
+        //            if (IsBoolean())
+        //            {
+        //                _completionSources = new ()
+        //                {
+        //                    static _ => new CompletionItem[]
+        //                    {
+        //                        new(bool.TrueString),
+        //                        new(bool.FalseString)
+        //                    }
+        //                };
+        //            }
+        //            else if (!valueType.IsPrimitive && (valueType.IsEnum || (valueType.TryGetNullableType(out valueType) && valueType.IsEnum)))
+        //            {
+        //                _completionSources = new()
+        //                {
+        //                    _ => Enum.GetNames(valueType).Select(n => new CompletionItem(n))
+        //                };
+        //            }
+        //            else
+        //            {
+        //                _completionSources = new();
+        //            }
+        //        }
 
-                return _completionSources;
-            }
-        }
+        //        return _completionSources;
+        //    }
+        //}
 
         /// <summary>
         /// Gets or sets the <see cref="Type" /> that the argument's parsed tokens will be converted to.
@@ -118,14 +116,14 @@ namespace System.CommandLine
         /// </summary>
         public abstract bool HasDefaultValue { get; }
 
-        /// <inheritdoc />
-        public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
-        {
-            return CompletionSources
-                   .SelectMany(source => source.Invoke(context))
-                   .Distinct()
-                   .OrderBy(c => c.SortText, StringComparer.OrdinalIgnoreCase);
-        }
+        ///// <inheritdoc />
+        //public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
+        //{
+        //    return CompletionSources
+        //           .SelectMany(source => source.Invoke(context))
+        //           .Distinct()
+        //           .OrderBy(c => c.SortText, StringComparer.OrdinalIgnoreCase);
+        //}
 
         /// <inheritdoc />
         public override string ToString() => $"{nameof(CliArgument)}: {Name}";

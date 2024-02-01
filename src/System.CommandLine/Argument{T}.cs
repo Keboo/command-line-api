@@ -94,8 +94,8 @@ namespace System.CommandLine
             {
                 Validators.Clear();
                 Validators.Add(UnrecognizedArgumentError);
-                CompletionSources.Clear();
-                CompletionSources.Add(values);
+                //CompletionSources.Clear();
+                //CompletionSources.Add(values);
             }
 
             void UnrecognizedArgumentError(ArgumentResult argumentResult)

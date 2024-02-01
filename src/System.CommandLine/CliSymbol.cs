@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Completions;
 using System.Diagnostics;
 
 namespace System.CommandLine
@@ -70,10 +69,10 @@ namespace System.CommandLine
             }
         }
 
-        /// <summary>
-        /// Gets completions for the symbol.
-        /// </summary>
-        public abstract IEnumerable<CompletionItem> GetCompletions(CompletionContext context);
+        ///// <summary>
+        ///// Gets completions for the symbol.
+        ///// </summary>
+        //public abstract IEnumerable<CompletionItem> GetCompletions(CompletionContext context);
 
         /// <inheritdoc/>
         public override string ToString() => $"{GetType().Name}: {Name}";

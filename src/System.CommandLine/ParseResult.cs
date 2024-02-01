@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace System.CommandLine
     {
         private readonly CommandResult _rootCommandResult;
         private readonly IReadOnlyList<CliToken> _unmatchedTokens;
-        private CompletionContext? _completionContext;
+        //private CompletionContext? _completionContext;
         private readonly CliAction? _action;
         private readonly List<CliAction>? _preActions;
 
@@ -100,11 +99,11 @@ namespace System.CommandLine
         /// <summary>
         /// Gets the completion context for the parse result.
         /// </summary>
-        public CompletionContext GetCompletionContext() =>
-            _completionContext ??=
-                CommandLineText is null
-                    ? new CompletionContext(this)
-                    : new TextCompletionContext(this, CommandLineText);
+        //public CompletionContext GetCompletionContext() =>
+        //    _completionContext ??=
+        //        CommandLineText is null
+        //            ? new CompletionContext(this)
+        //            : new TextCompletionContext(this, CommandLineText);
 
         /// <summary>
         /// Gets the parsed or default value for the specified argument.
@@ -180,47 +179,47 @@ namespace System.CommandLine
         /// </summary>
         /// <param name="position">The position at which completions are requested.</param>
         /// <returns>A set of completions for completion.</returns>
-        public IEnumerable<CompletionItem> GetCompletions(
-            int? position = null)
-        {
-            SymbolResult currentSymbolResult = SymbolToComplete(position);
+        //public IEnumerable<CompletionItem> GetCompletions(
+        //    int? position = null)
+        //{
+        //    SymbolResult currentSymbolResult = SymbolToComplete(position);
 
-            CliSymbol currentSymbol = currentSymbolResult switch
-            {
-                ArgumentResult argumentResult => argumentResult.Argument,
-                OptionResult optionResult => optionResult.Option,
-                DirectiveResult directiveResult => directiveResult.Directive,
-                _ => ((CommandResult)currentSymbolResult).Command
-            };
+        //    CliSymbol currentSymbol = currentSymbolResult switch
+        //    {
+        //        ArgumentResult argumentResult => argumentResult.Argument,
+        //        OptionResult optionResult => optionResult.Option,
+        //        DirectiveResult directiveResult => directiveResult.Directive,
+        //        _ => ((CommandResult)currentSymbolResult).Command
+        //    };
 
-            var context = GetCompletionContext();
+        //    var context = GetCompletionContext();
 
-            if (position is not null &&
-                context is TextCompletionContext tcc)
-            {
-                context = tcc.AtCursorPosition(position.Value);
-            }
+        //    if (position is not null &&
+        //        context is TextCompletionContext tcc)
+        //    {
+        //        context = tcc.AtCursorPosition(position.Value);
+        //    }
 
-            var completions = currentSymbol.GetCompletions(context);
+        //    var completions = currentSymbol.GetCompletions(context);
 
-            string[] optionsWithArgumentLimitReached = currentSymbolResult is CommandResult commandResult
-                                                           ? OptionsWithArgumentLimitReached(commandResult)
-                                                           : Array.Empty<string>();
+        //    string[] optionsWithArgumentLimitReached = currentSymbolResult is CommandResult commandResult
+        //                                                   ? OptionsWithArgumentLimitReached(commandResult)
+        //                                                   : Array.Empty<string>();
 
-            completions =
-                completions.Where(item => optionsWithArgumentLimitReached.All(s => s != item.Label));
+        //    completions =
+        //        completions.Where(item => optionsWithArgumentLimitReached.All(s => s != item.Label));
 
-            return completions;
+        //    return completions;
 
-            static string[] OptionsWithArgumentLimitReached(CommandResult commandResult) =>
-                commandResult
-                    .Children
-                    .OfType<OptionResult>()
-                    .Where(c => c.IsArgumentLimitReached)
-                    .Select(o => o.Option)
-                    .SelectMany(c => new[] { c.Name }.Concat(c.Aliases))
-                    .ToArray();
-        }
+        //    static string[] OptionsWithArgumentLimitReached(CommandResult commandResult) =>
+        //        commandResult
+        //            .Children
+        //            .OfType<OptionResult>()
+        //            .Where(c => c.IsArgumentLimitReached)
+        //            .Select(o => o.Option)
+        //            .SelectMany(c => new[] { c.Name }.Concat(c.Aliases))
+        //            .ToArray();
+        //}
 
         /// <summary>
         /// Invokes the appropriate command handler for a parsed command line input.
@@ -316,22 +315,22 @@ namespace System.CommandLine
                     return true;
                 }
 
-                var completionContext = parseResult.GetCompletionContext();
+                //var completionContext = parseResult.GetCompletionContext();
 
-                if (completionContext is TextCompletionContext textCompletionContext)
-                {
-                    if (position.HasValue)
-                    {
-                        textCompletionContext = textCompletionContext.AtCursorPosition(position.Value);
-                    }
+                //if (completionContext is TextCompletionContext textCompletionContext)
+                //{
+                //    if (position.HasValue)
+                //    {
+                //        textCompletionContext = textCompletionContext.AtCursorPosition(position.Value);
+                //    }
 
-                    if (textCompletionContext.WordToComplete.Length > 0)
-                    {
-                        var tokenToComplete = parseResult.Tokens.Last(t => t.Value == textCompletionContext.WordToComplete);
+                //    if (textCompletionContext.WordToComplete.Length > 0)
+                //    {
+                //        var tokenToComplete = parseResult.Tokens.Last(t => t.Value == textCompletionContext.WordToComplete);
 
-                        return optionResult.Tokens.Contains(tokenToComplete);
-                    }
-                }
+                //        return optionResult.Tokens.Contains(tokenToComplete);
+                //    }
+                //}
 
                 return !optionResult.IsArgumentLimitReached;
             }

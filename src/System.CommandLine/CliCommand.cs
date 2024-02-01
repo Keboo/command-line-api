@@ -3,12 +3,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -211,101 +209,101 @@ namespace System.CommandLine
         public ParseResult Parse(string commandLine, CliConfiguration? configuration = null)
             => CliParser.Parse(this, commandLine, configuration);
 
-        /// <inheritdoc />
-        public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
-        {
-            var completions = new List<CompletionItem>();
+        ///// <inheritdoc />
+        //public override IEnumerable<CompletionItem> GetCompletions(CompletionContext context)
+        //{
+        //    var completions = new List<CompletionItem>();
 
-            if (context.WordToComplete is { } textToMatch)
-            {
-                if (HasSubcommands)
-                {
-                    var commands = Subcommands;
-                    for (int i = 0; i < commands.Count; i++)
-                    {
-                        AddCompletionsFor(commands[i], commands[i]._aliases);
-                    }
-                }
+        //    if (context.WordToComplete is { } textToMatch)
+        //    {
+        //        if (HasSubcommands)
+        //        {
+        //            var commands = Subcommands;
+        //            for (int i = 0; i < commands.Count; i++)
+        //            {
+        //                AddCompletionsFor(commands[i], commands[i]._aliases);
+        //            }
+        //        }
 
-                if (HasOptions)
-                {
-                    var options = Options;
-                    for (int i = 0; i < options.Count; i++)
-                    {
-                        AddCompletionsFor(options[i], options[i]._aliases);
-                    }
-                }
+        //        if (HasOptions)
+        //        {
+        //            var options = Options;
+        //            for (int i = 0; i < options.Count; i++)
+        //            {
+        //                AddCompletionsFor(options[i], options[i]._aliases);
+        //            }
+        //        }
 
-                if (HasArguments)
-                {
-                    var arguments = Arguments;
-                    for (int i = 0; i < arguments.Count; i++)
-                    {
-                        var argument = arguments[i];
-                        foreach (var completion in argument.GetCompletions(context))
-                        {
-                            if (completion.Label.ContainsCaseInsensitive(textToMatch))
-                            {
-                                completions.Add(completion);
-                            }
-                        }
-                    }
-                }
+        //        if (HasArguments)
+        //        {
+        //            var arguments = Arguments;
+        //            for (int i = 0; i < arguments.Count; i++)
+        //            {
+        //                var argument = arguments[i];
+        //                foreach (var completion in argument.GetCompletions(context))
+        //                {
+        //                    if (completion.Label.ContainsCaseInsensitive(textToMatch))
+        //                    {
+        //                        completions.Add(completion);
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                SymbolNode? parent = FirstParent;
-                while (parent is not null)
-                {
-                    CliCommand parentCommand = (CliCommand)parent.Symbol;
+        //        SymbolNode? parent = FirstParent;
+        //        while (parent is not null)
+        //        {
+        //            CliCommand parentCommand = (CliCommand)parent.Symbol;
 
-                    if (context.IsEmpty || context.ParseResult.GetResult(parentCommand) is not null)
-                    {
-                        if (parentCommand.HasOptions)
-                        {
-                            for (var i = 0; i < parentCommand.Options.Count; i++)
-                            {
-                                var option = parentCommand.Options[i];
+        //            if (context.IsEmpty || context.ParseResult.GetResult(parentCommand) is not null)
+        //            {
+        //                if (parentCommand.HasOptions)
+        //                {
+        //                    for (var i = 0; i < parentCommand.Options.Count; i++)
+        //                    {
+        //                        var option = parentCommand.Options[i];
 
-                                if (option.Recursive)
-                                {
-                                    AddCompletionsFor(option, option._aliases);
-                                }
-                            }
-                        }
-                        parent = parent.Symbol.FirstParent;
-                    }
-                    else
-                    {
-                        parent = parent.Next;
-                    }
-                }
-            }
+        //                        if (option.Recursive)
+        //                        {
+        //                            AddCompletionsFor(option, option._aliases);
+        //                        }
+        //                    }
+        //                }
+        //                parent = parent.Symbol.FirstParent;
+        //            }
+        //            else
+        //            {
+        //                parent = parent.Next;
+        //            }
+        //        }
+        //    }
 
-            return completions
-                   .OrderBy(item => item.SortText.IndexOfCaseInsensitive(context.WordToComplete))
-                   .ThenBy(symbol => symbol.Label, StringComparer.OrdinalIgnoreCase);
+        //    return completions
+        //           .OrderBy(item => item.SortText.IndexOfCaseInsensitive(context.WordToComplete))
+        //           .ThenBy(symbol => symbol.Label, StringComparer.OrdinalIgnoreCase);
 
-            void AddCompletionsFor(CliSymbol identifier, AliasSet? aliases)
-            {
-                if (!identifier.Hidden)
-                {
-                    if (identifier.Name.ContainsCaseInsensitive(textToMatch))
-                    {
-                        completions.Add(new CompletionItem(identifier.Name, CompletionItem.KindKeyword, detail: identifier.Description));
-                    }
+        //    void AddCompletionsFor(CliSymbol identifier, AliasSet? aliases)
+        //    {
+        //        if (!identifier.Hidden)
+        //        {
+        //            if (identifier.Name.ContainsCaseInsensitive(textToMatch))
+        //            {
+        //                completions.Add(new CompletionItem(identifier.Name, CompletionItem.KindKeyword, detail: identifier.Description));
+        //            }
 
-                    if (aliases is not null)
-                    {
-                        foreach (string alias in aliases)
-                        {
-                            if (alias.ContainsCaseInsensitive(textToMatch))
-                            {
-                                completions.Add(new CompletionItem(alias, CompletionItem.KindKeyword, detail: identifier.Description));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //            if (aliases is not null)
+        //            {
+        //                foreach (string alias in aliases)
+        //                {
+        //                    if (alias.ContainsCaseInsensitive(textToMatch))
+        //                    {
+        //                        completions.Add(new CompletionItem(alias, CompletionItem.KindKeyword, detail: identifier.Description));
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         internal bool EqualsNameOrAlias(string name)
             => Name.Equals(name, StringComparison.Ordinal) || (_aliases is not null && _aliases.Contains(name));

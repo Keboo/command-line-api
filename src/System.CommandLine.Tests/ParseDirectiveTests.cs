@@ -116,7 +116,7 @@ namespace System.CommandLine.Tests
             };
 
             //var exitCode = await command.Parse("[diagram] -x 123", config).InvokeAsync();
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //exitCode.Should().Be(0);
         }
 
@@ -135,7 +135,7 @@ namespace System.CommandLine.Tests
             };
 
             //var exitCode = await command.Parse("[diagram] -x not-an-int", config).InvokeAsync();
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //exitCode.Should().Be(1);
         }
 
@@ -157,7 +157,7 @@ namespace System.CommandLine.Tests
             };
 
             //int exitCode = await config.InvokeAsync("[diagram] -x not-an-int");
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //exitCode.Should().Be(42);
         }
     }

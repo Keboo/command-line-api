@@ -1342,13 +1342,13 @@ namespace System.CommandLine.Tests
             if (treatUnmatchedTokensAsErrors)
             {
                 result.Errors.Should().NotBeEmpty();
-                Assert.Fail("Uncomment Below Code");
+                Assert.True(false, "Uncomment Below Code");
                 //result.Action.Should().NotBeSameAs(result.CommandResult.Command.Action);
             }
             else
             {
                 result.Errors.Should().BeEmpty();
-                Assert.Fail("Uncomment Below Code");
+                Assert.True(false, "Uncomment Below Code");
                 //result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
             }
         }
@@ -1372,7 +1372,7 @@ namespace System.CommandLine.Tests
             result.UnmatchedTokens.Should().BeEquivalentTo("test1.dll", "test2.dll");
 
             result.Errors.Should().BeEmpty();
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
         }
 
@@ -1599,7 +1599,7 @@ namespace System.CommandLine.Tests
 
             var parseResult = rootCommand.Parse("subcommand arg1 arg2");
 
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //Action act = () => parseResult.GetCompletions();
             //act.Should().NotThrow();
         }

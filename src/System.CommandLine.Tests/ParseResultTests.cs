@@ -132,7 +132,7 @@ namespace System.CommandLine.Tests
             var result = CliParser.Parse(rootCommand, "root midCommand2 leafCommand --");
 
             //var completions = result.GetCompletions();
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //completions
             //    .Select(item => item.Label)
             //    .Should()
@@ -141,7 +141,7 @@ namespace System.CommandLine.Tests
 
         [Fact]
         public void Handler_is_null_when_parsed_command_did_not_specify_handler()
-            => Assert.Fail("Uncomment This Code");//new CliRootCommand().Parse("").Action.Should().BeNull();
+            => Assert.True(false, "Uncomment This Code");//new CliRootCommand().Parse("").Action.Should().BeNull();
 
         [Fact]
         public void Handler_is_not_null_when_parsed_command_specified_handler()
@@ -153,7 +153,7 @@ namespace System.CommandLine.Tests
 
             ParseResult parseResult = command.Parse("");
 
-            Assert.Fail("Uncomment Below Code");
+            Assert.True(false, "Uncomment Below Code");
             //parseResult.Action.Should().NotBeNull();
             handlerWasCalled.Should().BeFalse();
 

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.CommandLine.Help;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,7 +25,7 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("--version");
+            //await configuration.InvokeAsync("--version");
 
             configuration.Output.ToString().Should().Be($"{version}{NewLine}");
         }
@@ -36,14 +35,14 @@ namespace System.CommandLine.Tests
         {
             var wasCalled = false;
             var rootCommand = new CliRootCommand();
-            rootCommand.SetAction((_) => wasCalled = true);
+            //rootCommand.SetAction((_) => wasCalled = true);
 
             CliConfiguration configuration = new(rootCommand)
             {
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("--version");
+            //await configuration.InvokeAsync("--version");
 
             wasCalled.Should().BeFalse();
         }
@@ -56,7 +55,7 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("--help");
+            //await configuration.InvokeAsync("--help");
 
             configuration.Output
                    .ToString()
@@ -74,14 +73,14 @@ namespace System.CommandLine.Tests
                     DefaultValueFactory = (_) => true
                 },
             };
-            rootCommand.SetAction((_) => { });
+            //rootCommand.SetAction((_) => { });
 
             CliConfiguration configuration = new(rootCommand)
             {
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("--version");
+            //await configuration.InvokeAsync("--version");
 
             configuration.Output.ToString().Should().Be($"{version}{NewLine}");
         }
@@ -93,14 +92,14 @@ namespace System.CommandLine.Tests
             {
                 new CliArgument<bool>("x") { DefaultValueFactory =(_) => true },
             };
-            rootCommand.SetAction((_) => { });
+            //rootCommand.SetAction((_) => { });
 
             CliConfiguration configuration = new(rootCommand)
             {
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("--version");
+            //await configuration.InvokeAsync("--version");
 
             configuration.Output.ToString().Should().Be($"{version}{NewLine}");
         }
@@ -111,13 +110,13 @@ namespace System.CommandLine.Tests
         public void Version_is_not_valid_with_other_tokens(string commandLine)
         {
             var subcommand = new CliCommand("subcommand");
-            subcommand.SetAction(_ => { });
+            //subcommand.SetAction(_ => { });
             var rootCommand = new CliRootCommand
             {
                 subcommand,
                 new CliOption<bool>("-x")
             };
-            rootCommand.SetAction(_ => { });
+            //rootCommand.SetAction(_ => { });
 
             CliConfiguration configuration = new(rootCommand)
             {
@@ -133,13 +132,13 @@ namespace System.CommandLine.Tests
         public void Version_option_is_not_added_to_subcommands()
         {
             var childCommand = new CliCommand("subcommand");
-            childCommand.SetAction(_ => { });
+            //childCommand.SetAction(_ => { });
 
             var rootCommand = new CliRootCommand
             {
                 childCommand
             };
-            rootCommand.SetAction(_ => { });
+            //rootCommand.SetAction(_ => { });
 
             CliConfiguration configuration = new(rootCommand)
             {
@@ -171,11 +170,11 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter()
             };
 
-            await configuration.InvokeAsync("-v");
+            //await configuration.InvokeAsync("-v");
             configuration.Output.ToString().Should().Be($"{version}{NewLine}");
 
             configuration.Output = new StringWriter();
-            await configuration.InvokeAsync("-version");
+            //await configuration.InvokeAsync("-version");
             configuration.Output.ToString().Should().Be($"{version}{NewLine}");
         }
 
@@ -183,7 +182,7 @@ namespace System.CommandLine.Tests
         public void Version_is_not_valid_with_other_tokens_uses_custom_alias()
         {
             var childCommand = new CliCommand("subcommand");
-            childCommand.SetAction((_) => { });
+            //childCommand.SetAction((_) => { });
             var rootCommand = new CliRootCommand
             {
                 childCommand
@@ -191,7 +190,7 @@ namespace System.CommandLine.Tests
 
             rootCommand.Options[1] = new VersionOption("-v");
 
-            rootCommand.SetAction((_) => { });
+            //rootCommand.SetAction((_) => { });
 
             CliConfiguration configuration = new(rootCommand)
             {

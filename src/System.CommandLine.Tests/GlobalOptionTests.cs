@@ -25,7 +25,7 @@ namespace System.CommandLine.Tests
         {
             var command = new CliCommand("child");
             var rootCommand = new CliRootCommand { command };
-            command.SetAction((_) => { });
+            //command.SetAction((_) => { });
             var requiredOption = new CliOption<bool>("--i-must-be-set")
             {
                 Required = true,
@@ -65,7 +65,7 @@ namespace System.CommandLine.Tests
         {
             var command = new CliCommand("child");
             var rootCommand = new CliRootCommand { command };
-            command.SetAction((_) => { });
+            //command.SetAction((_) => { });
             var requiredOption = new CliOption<bool>("--i-must-be-set")
             {
                 Required = true,

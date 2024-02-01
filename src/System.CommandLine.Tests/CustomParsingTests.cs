@@ -345,10 +345,10 @@ public class CustomParsingTests
         };
 
         var command = new CliRootCommand();
-        command.SetAction((ctx) => handlerWasCalled = true);
+        //command.SetAction((ctx) => handlerWasCalled = true);
         command.Options.Add(option);
 
-        await command.Parse("--value 42").InvokeAsync();
+        //await command.Parse("--value 42").InvokeAsync();
 
         callCount.Should().Be(1);
         handlerWasCalled.Should().BeTrue();

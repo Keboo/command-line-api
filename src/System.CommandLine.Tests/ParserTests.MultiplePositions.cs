@@ -118,7 +118,7 @@ namespace System.CommandLine.Tests
                 string expectedParent)
             {
                 var reusedCommand = new CliCommand("reused");
-                reusedCommand.SetAction((_) => { });
+                //reusedCommand.SetAction((_) => { });
                 reusedCommand.Add(new CliOption<string>("--the-option"));
 
                 var outer = new CliCommand("outer")

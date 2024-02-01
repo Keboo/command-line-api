@@ -266,20 +266,20 @@ public class CliConfigurationTests
     {
         var command = new CliRootCommand();
         var commandWasInvoked = false;
-        command.SetAction(parseResult =>
-        {
-            var appConfig = (CustomAppConfiguration)parseResult.Configuration;
+        //command.SetAction(parseResult =>
+        //{
+        //    var appConfig = (CustomAppConfiguration)parseResult.Configuration;
 
-            // access custom config
+        //    // access custom config
 
-            commandWasInvoked = true;
+        //    commandWasInvoked = true;
 
-            return 0;
-        });
+        //    return 0;
+        //});
 
         var config = new CustomAppConfiguration(command);
 
-        config.Invoke("");
+        //config.Invoke("");
 
         commandWasInvoked.Should().BeTrue();
     }

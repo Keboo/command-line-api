@@ -10,7 +10,6 @@ using FluentAssertions.Equivalency;
 using System.Linq;
 using FluentAssertions.Common;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace System.CommandLine.Tests
 {
@@ -1343,12 +1342,14 @@ namespace System.CommandLine.Tests
             if (treatUnmatchedTokensAsErrors)
             {
                 result.Errors.Should().NotBeEmpty();
-                result.Action.Should().NotBeSameAs(result.CommandResult.Command.Action);
+                Assert.Fail("Uncomment Below Code");
+                //result.Action.Should().NotBeSameAs(result.CommandResult.Command.Action);
             }
             else
             {
                 result.Errors.Should().BeEmpty();
-                result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
+                Assert.Fail("Uncomment Below Code");
+                //result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
             }
         }
 
@@ -1371,7 +1372,8 @@ namespace System.CommandLine.Tests
             result.UnmatchedTokens.Should().BeEquivalentTo("test1.dll", "test2.dll");
 
             result.Errors.Should().BeEmpty();
-            result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
+            Assert.Fail("Uncomment Below Code");
+            //result.Action.Should().BeSameAs(result.CommandResult.Command.Action);
         }
 
         [Fact]
@@ -1597,8 +1599,9 @@ namespace System.CommandLine.Tests
 
             var parseResult = rootCommand.Parse("subcommand arg1 arg2");
 
-            Action act = () => parseResult.GetCompletions();
-            act.Should().NotThrow();
+            Assert.Fail("Uncomment Below Code");
+            //Action act = () => parseResult.GetCompletions();
+            //act.Should().NotThrow();
         }
 
         [Theory] // https://github.com/dotnet/command-line-api/issues/1551, https://github.com/dotnet/command-line-api/issues/1533

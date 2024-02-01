@@ -1,7 +1,6 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.CommandLine.Invocation;
 using System.Linq;
 using System.CommandLine.Parsing;
 using FluentAssertions;
@@ -132,17 +131,17 @@ namespace System.CommandLine.Tests
 
             var result = CliParser.Parse(rootCommand, "root midCommand2 leafCommand --");
 
-            var completions = result.GetCompletions();
-
-            completions
-                .Select(item => item.Label)
-                .Should()
-                .BeEquivalentTo("--one", "--two", "--three2");
+            //var completions = result.GetCompletions();
+            Assert.Fail("Uncomment Below Code");
+            //completions
+            //    .Select(item => item.Label)
+            //    .Should()
+            //    .BeEquivalentTo("--one", "--two", "--three2");
         }
 
         [Fact]
         public void Handler_is_null_when_parsed_command_did_not_specify_handler()
-            => new CliRootCommand().Parse("").Action.Should().BeNull();
+            => Assert.Fail("Uncomment This Code");//new CliRootCommand().Parse("").Action.Should().BeNull();
 
         [Fact]
         public void Handler_is_not_null_when_parsed_command_specified_handler()
@@ -150,14 +149,15 @@ namespace System.CommandLine.Tests
             bool handlerWasCalled = false;
 
             CliRootCommand command = new();
-            command.SetAction((_) => handlerWasCalled = true);
+            //command.SetAction((_) => handlerWasCalled = true);
 
             ParseResult parseResult = command.Parse("");
 
-            parseResult.Action.Should().NotBeNull();
+            Assert.Fail("Uncomment Below Code");
+            //parseResult.Action.Should().NotBeNull();
             handlerWasCalled.Should().BeFalse();
 
-            ((SynchronousCliAction)parseResult.Action!).Invoke(null!).Should().Be(0);
+            //((SynchronousCliAction)parseResult.Action!).Invoke(null!).Should().Be(0);
             handlerWasCalled.Should().BeTrue();
         }
     }

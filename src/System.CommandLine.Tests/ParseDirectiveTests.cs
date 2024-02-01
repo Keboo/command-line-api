@@ -39,7 +39,7 @@ namespace System.CommandLine.Tests
 
             output.WriteLine(result.Diagram());
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             string expected = treatUnmatchedTokensAsErrors
                                   ? $"[ {CliRootCommand.ExecutableName} ![ subcommand [ -c <34> ] ] ]   ???--> --nonexistent wat" + Environment.NewLine
@@ -68,7 +68,7 @@ namespace System.CommandLine.Tests
 
             output.WriteLine(result.Diagram());
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -93,7 +93,7 @@ namespace System.CommandLine.Tests
 
             output.WriteLine(result.Diagram());
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                   .ToString()
@@ -115,9 +115,9 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter(),
             };
 
-            var exitCode = await command.Parse("[diagram] -x 123", config).InvokeAsync();
-
-            exitCode.Should().Be(0);
+            //var exitCode = await command.Parse("[diagram] -x 123", config).InvokeAsync();
+            Assert.Fail("Uncomment Below Code");
+            //exitCode.Should().Be(0);
         }
 
         [Fact]
@@ -134,9 +134,9 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter(),
             };
 
-            var exitCode = await command.Parse("[diagram] -x not-an-int", config).InvokeAsync();
-
-            exitCode.Should().Be(1);
+            //var exitCode = await command.Parse("[diagram] -x not-an-int", config).InvokeAsync();
+            Assert.Fail("Uncomment Below Code");
+            //exitCode.Should().Be(1);
         }
 
         [Fact]
@@ -156,9 +156,9 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter()
             };
 
-            int exitCode = await config.InvokeAsync("[diagram] -x not-an-int");
-
-            exitCode.Should().Be(42);
+            //int exitCode = await config.InvokeAsync("[diagram] -x not-an-int");
+            Assert.Fail("Uncomment Below Code");
+            //exitCode.Should().Be(42);
         }
     }
 }

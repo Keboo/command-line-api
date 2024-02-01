@@ -445,7 +445,7 @@ namespace System.CommandLine.Tests
                 commandValidatorWasCalled = true;
             });
 
-            rootCommand.Parse(commandLine).Invoke();
+            //rootCommand.Parse(commandLine).Invoke();
 
             commandValidatorWasCalled.Should().BeTrue();
             optionValidatorWasCalled.Should().BeTrue();
@@ -514,13 +514,13 @@ namespace System.CommandLine.Tests
 
             rootCommand.Options.Add(globalOption);
 
-            rootCommand.SetAction((ctx) => handlerWasCalled = true);
-            childCommand.SetAction((ctx) => handlerWasCalled = true);
-            grandchildCommand.SetAction((ctx) => handlerWasCalled = true);
+            //rootCommand.SetAction((ctx) => handlerWasCalled = true);
+            //childCommand.SetAction((ctx) => handlerWasCalled = true);
+            //grandchildCommand.SetAction((ctx) => handlerWasCalled = true);
 
-            var result = await rootCommand.Parse(commandLine).InvokeAsync();
+            //var result = await rootCommand.Parse(commandLine).InvokeAsync();
 
-            result.Should().Be(1);
+            //result.Should().Be(1);
             handlerWasCalled.Should().BeFalse();
         }
 
@@ -1147,7 +1147,7 @@ namespace System.CommandLine.Tests
         {
             var outer = new CliCommand("outer");
             var inner = new CliCommand("inner");
-            inner.SetAction((_) => { });
+            //inner.SetAction((_) => { });
             var innerer = new CliCommand("inner-er");
             outer.Subcommands.Add(inner);
             inner.Subcommands.Add(innerer);

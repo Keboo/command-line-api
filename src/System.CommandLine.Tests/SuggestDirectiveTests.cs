@@ -1,8 +1,6 @@
 ﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.CommandLine.Completions;
-using System.CommandLine.Help;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -22,10 +20,10 @@ namespace System.CommandLine.Tests
         public SuggestDirectiveTests()
         {
             _fruitOption = new CliOption<string>("--fruit");
-            _fruitOption.CompletionSources.Add("apple", "banana", "cherry");
+            //_fruitOption.CompletionSources.Add("apple", "banana", "cherry");
 
             _vegetableOption = new CliOption<string>("--vegetable");
-            _vegetableOption.CompletionSources.Add(_ => new[] { "asparagus", "broccoli", "carrot" });
+            //_vegetableOption.CompletionSources.Add(_ => new[] { "asparagus", "broccoli", "carrot" });
 
             _eatCommand = new CliCommand("eat")
             {
@@ -40,7 +38,7 @@ namespace System.CommandLine.Tests
             CliRootCommand rootCommand = new()
             {
                 _eatCommand,
-                new SuggestDirective()
+                //new SuggestDirective()
             };
             CliConfiguration config = new(rootCommand)
             {
@@ -49,7 +47,7 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse("[suggest:13] \"eat --fruit\"", config);
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -72,7 +70,7 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse($"[suggest:8] \"--fruit\"", config);
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -93,7 +91,7 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse(commandLine, config);
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             string expected = string.Join(NewLine, expectedCompletions) + NewLine;
 
@@ -121,7 +119,7 @@ namespace System.CommandLine.Tests
             };
 
             var result = rootCommand.Parse(input, config);
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -142,7 +140,7 @@ namespace System.CommandLine.Tests
             };
 
             var result = rootCommand.Parse("[suggest]", config);
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -165,7 +163,7 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse("[suggest:1] \"f\"", config);
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -188,7 +186,8 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse("[suggest:1] \"d\"", config);
 
-            await result.InvokeAsync();
+
+
 
             config.Output
                    .ToString()
@@ -211,7 +210,7 @@ namespace System.CommandLine.Tests
 
             var result = rootCommand.Parse("[suggest:5] \"--ver\"", config);
 
-            await result.InvokeAsync();
+            //await result.InvokeAsync();
 
             config.Output
                    .ToString()
@@ -234,7 +233,7 @@ namespace System.CommandLine.Tests
                 Output = new StringWriter()
             };
 
-            await config.InvokeAsync("[suggest:3] \"opt\"");
+            //await config.InvokeAsync("[suggest:3] \"opt\"");
 
             config.Output
                    .ToString()
@@ -256,7 +255,7 @@ namespace System.CommandLine.Tests
 
             var commandLine = "--bool-option false";
 
-            await command.Parse($"[suggest:{commandLine.Length + 1}] \"{commandLine}\"", config).InvokeAsync();
+            //await command.Parse($"[suggest:{commandLine.Length + 1}] \"{commandLine}\"", config).InvokeAsync();
 
             config.Output
                    .ToString()

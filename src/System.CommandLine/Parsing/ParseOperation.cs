@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Help;
 using System.CommandLine.Invocation;
 
 namespace System.CommandLine.Parsing
@@ -191,10 +190,11 @@ namespace System.CommandLine.Parsing
                     // directives have a precedence over --help and --version
                     if (!_isTerminatingDirectiveSpecified)
                     {
-                        if (option is HelpOption)
-                        {
-                            _isHelpRequested = true;
-                        }
+                        // TODO: ouch
+                        // if (option is HelpOption)
+                        // {
+                        //     _isHelpRequested = true;
+                        // }
 
                         if (option.Action.Terminating)
                         {

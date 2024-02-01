@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
-using System.CommandLine.Help;
 using System.CommandLine.Parsing;
 using System.Linq;
 using System.Threading;
@@ -36,10 +35,11 @@ public sealed class ParseErrorAction : SynchronousCliAction
 
         WriteErrorDetails(parseResult);
 
-        if (ShowHelp)
-        {
-            WriteHelp(parseResult);
-        }
+        // TODO: move with invocation
+        // if (ShowHelp)
+        // {
+        //     WriteHelp(parseResult);
+        // }
 
         return 1;
     }
@@ -59,29 +59,30 @@ public sealed class ParseErrorAction : SynchronousCliAction
         ConsoleHelpers.ResetTerminalForegroundColor();
     }
 
-    private static void WriteHelp(ParseResult parseResult)
-    {
-        // Find the most proximate help option (if any) and invoke its action.
-        var availableHelpOptions =
-            parseResult
-                .CommandResult
-                .RecurseWhileNotNull(r => r.Parent as CommandResult)
-                .Select(r => r.Command.Options.OfType<HelpOption>().FirstOrDefault());
+    // TODO: move with invocation
+    // private static void WriteHelp(ParseResult parseResult)
+    // {
+    //     // Find the most proximate help option (if any) and invoke its action.
+    //     var availableHelpOptions =
+    //         parseResult
+    //             .CommandResult
+    //             .RecurseWhileNotNull(r => r.Parent as CommandResult)
+    //             .Select(r => r.Command.Options.OfType<HelpOption>().FirstOrDefault());
 
-        if (availableHelpOptions.FirstOrDefault(o => o is not null) is { Action: not null } helpOption)
-        {
-            switch (helpOption.Action)
-            {
-                case SynchronousCliAction syncAction:
-                    syncAction.Invoke(parseResult);
-                    break;
+    //     if (availableHelpOptions.FirstOrDefault(o => o is not null) is { Action: not null } helpOption)
+    //     {
+    //         switch (helpOption.Action)
+    //         {
+    //             case SynchronousCliAction syncAction:
+    //                 syncAction.Invoke(parseResult);
+    //                 break;
 
-                case AsynchronousCliAction asyncAction:
-                    asyncAction.InvokeAsync(parseResult, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-                    break;
-            }
-        }
-    }
+    //             case AsynchronousCliAction asyncAction:
+    //                 asyncAction.InvokeAsync(parseResult, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+    //                 break;
+    //         }
+    //     }
+    // }
 
     private static void WriteTypoCorrectionSuggestions(ParseResult parseResult)
     {

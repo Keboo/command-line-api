@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.CommandLine.Completions;
-using System.CommandLine.Help;
 using System.IO;
 using System.Reflection;
 
@@ -27,7 +26,8 @@ namespace System.CommandLine
         /// <param name="description">The description of the command, shown in help.</param>
         public CliRootCommand(string description = "") : base(ExecutableName, description)
         {
-            Options.Add(new HelpOption());
+            // TODO: find solution
+            // Options.Add(new HelpOption());
             Options.Add(new VersionOption()); 
             Directives = new ChildSymbolList<CliDirective>(this)
             {

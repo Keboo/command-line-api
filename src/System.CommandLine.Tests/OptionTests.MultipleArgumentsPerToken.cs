@@ -128,7 +128,7 @@ namespace System.CommandLine.Tests
 
                     var result = new CliRootCommand { option }.Parse("-x 1 -x 2 -x 3 -x 4");
 
-                    _output.WriteLine(result.Diagram());
+                    //_output.WriteLine(result.Diagram());
 
                     var optionResult = result.GetResult(option);
 
@@ -158,7 +158,7 @@ namespace System.CommandLine.Tests
 
                     var result = command.Parse("-x -x -x -y -y -x -y -y -y -x -x -y");
 
-                    _output.WriteLine(result.Diagram());
+                    //_output.WriteLine(result.Diagram());
 
                     result.Errors.Should().BeEmpty();
                     result.GetValue(optionY).Should().Be("-x");

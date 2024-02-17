@@ -4,8 +4,6 @@
 using System.Collections.Generic;
 using System.CommandLine.Parsing;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace System.CommandLine
 {
@@ -27,14 +25,15 @@ namespace System.CommandLine
             List<CliToken> tokens,
             List<CliToken>? unmatchedTokens,
             List<ParseError>? errors,
-            string? commandLineText = null//,
-            //CliAction? action = null,
+            string? commandLineText = null,
+            CliSymbol? primarySymbol = null
             //List<CliAction>? preActions = null
             )
         {
             Configuration = configuration;
             _rootCommandResult = rootCommandResult;
             CommandResult = commandResult;
+            PrimarySymbol = primarySymbol;
             //_action = action;
             //_preActions = preActions;
 
@@ -58,6 +57,8 @@ namespace System.CommandLine
         }
 
         internal static ParseResult Empty() => new CliRootCommand().Parse(Array.Empty<string>());
+
+        public CliSymbol? PrimarySymbol { get; }
 
         /// <summary>
         /// A result indicating the command specified in the command line input.
@@ -272,68 +273,68 @@ namespace System.CommandLine
 
         //internal IReadOnlyList<CliAction>? PreActions => _preActions;
 
-        private SymbolResult SymbolToComplete(int? position = null)
-        {
-            var commandResult = CommandResult;
+        //private SymbolResult SymbolToComplete(int? position = null)
+        //{
+        //    var commandResult = CommandResult;
 
-            var allSymbolResultsForCompletion = AllSymbolResultsForCompletion();
+        //    var allSymbolResultsForCompletion = AllSymbolResultsForCompletion();
 
-            var currentSymbol = allSymbolResultsForCompletion.Last();
+        //    var currentSymbol = allSymbolResultsForCompletion.Last();
 
-            return currentSymbol;
+        //    return currentSymbol;
 
-            IEnumerable<SymbolResult> AllSymbolResultsForCompletion()
-            {
-                foreach (var item in commandResult.AllSymbolResults())
-                {
-                    if (item is CommandResult command)
-                    {
-                        yield return command;
-                    }
-                    else if (item is OptionResult option)
-                    {
-                        if (WillAcceptAnArgument(this, position, option))
-                        {
-                            yield return option;
-                        }
-                    }
-                }
-            }
+        //    IEnumerable<SymbolResult> AllSymbolResultsForCompletion()
+        //    {
+        //        foreach (var item in commandResult.AllSymbolResults())
+        //        {
+        //            if (item is CommandResult command)
+        //            {
+        //                yield return command;
+        //            }
+        //            else if (item is OptionResult option)
+        //            {
+        //                if (WillAcceptAnArgument(this, position, option))
+        //                {
+        //                    yield return option;
+        //                }
+        //            }
+        //        }
+        //    }
 
-            static bool WillAcceptAnArgument(
-                ParseResult parseResult,
-                int? position,
-                OptionResult optionResult)
-            {
-                if (optionResult.Implicit)
-                {
-                    return false;
-                }
+        //    static bool WillAcceptAnArgument(
+        //        ParseResult parseResult,
+        //        int? position,
+        //        OptionResult optionResult)
+        //    {
+        //        if (optionResult.Implicit)
+        //        {
+        //            return false;
+        //        }
 
-                if (!optionResult.IsArgumentLimitReached)
-                {
-                    return true;
-                }
+        //        if (!optionResult.IsArgumentLimitReached)
+        //        {
+        //            return true;
+        //        }
 
-                //var completionContext = parseResult.GetCompletionContext();
+        //        //var completionContext = parseResult.GetCompletionContext();
 
-                //if (completionContext is TextCompletionContext textCompletionContext)
-                //{
-                //    if (position.HasValue)
-                //    {
-                //        textCompletionContext = textCompletionContext.AtCursorPosition(position.Value);
-                //    }
+        //        //if (completionContext is TextCompletionContext textCompletionContext)
+        //        //{
+        //        //    if (position.HasValue)
+        //        //    {
+        //        //        textCompletionContext = textCompletionContext.AtCursorPosition(position.Value);
+        //        //    }
 
-                //    if (textCompletionContext.WordToComplete.Length > 0)
-                //    {
-                //        var tokenToComplete = parseResult.Tokens.Last(t => t.Value == textCompletionContext.WordToComplete);
+        //        //    if (textCompletionContext.WordToComplete.Length > 0)
+        //        //    {
+        //        //        var tokenToComplete = parseResult.Tokens.Last(t => t.Value == textCompletionContext.WordToComplete);
 
-                //        return optionResult.Tokens.Contains(tokenToComplete);
-                //    }
-                //}
+        //        //        return optionResult.Tokens.Contains(tokenToComplete);
+        //        //    }
+        //        //}
 
-                return !optionResult.IsArgumentLimitReached;
-            }
-        }
+        //        return !optionResult.IsArgumentLimitReached;
+        //    }
+        //}
     }
 }

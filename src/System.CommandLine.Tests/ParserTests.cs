@@ -500,7 +500,8 @@ namespace System.CommandLine.Tests
 
             ParseResult result = command.Parse("one two three");
 
-            result.Diagram().Should().Be("[ one [ two [ three ] ] ]");
+            Assert.True(false, "Fix below");
+            //result.Diagram().Should().Be("[ one [ two [ three ] ] ]");
         }
 
         [Fact]
@@ -517,7 +518,8 @@ namespace System.CommandLine.Tests
 
             ParseResult result = command.Parse("one three");
 
-            result.Diagram().Should().Be("[ one [ three ] ]");
+            Assert.True(false, "Fix below");
+            //result.Diagram().Should().Be("[ one [ three ] ]");
         }
 
         [Fact]
@@ -570,7 +572,8 @@ namespace System.CommandLine.Tests
 
             ParseResult result = command.Parse("outer arg1 inner arg2 non-unique arg3 ");
 
-            result.Diagram().Should().Be("[ outer <arg1> [ inner <arg2> [ non-unique <arg3> ] ] ]");
+            Assert.True(false, "Fix below");
+            //result.Diagram().Should().Be("[ outer <arg1> [ inner <arg2> [ non-unique <arg3> ] ] ]");
         }
 
         [Fact]

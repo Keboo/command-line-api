@@ -24,6 +24,11 @@ namespace System.CommandLine
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the directive should be executed rather than invoking the rest of the command line.
+        /// </summary>
+        public bool IsTerminating { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="CliAction"/> for the Directive. The handler represents the action
         /// that will be performed when the Directive is invoked.
         /// </summary>

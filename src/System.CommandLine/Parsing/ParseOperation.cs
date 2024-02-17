@@ -17,6 +17,7 @@ namespace System.CommandLine.Parsing
         private CommandResult _innermostCommandResult;
         private bool _isHelpRequested;
         private bool _isTerminatingDirectiveSpecified;
+        private CliSymbol? _primarySymbol;
         //private CliAction? _primaryAction;
         //private List<CliAction>? _preActions;
 
@@ -76,7 +77,8 @@ namespace System.CommandLine.Parsing
                 _tokens,
                 _symbolResultTree.UnmatchedTokens,
                 _symbolResultTree.Errors,
-                _rawInput//,
+                _rawInput,
+                _primarySymbol
                 //_primaryAction,
                 //_preActions);
                 );
@@ -329,6 +331,12 @@ namespace System.CommandLine.Parsing
                 if (indexOfColon > 0)
                 {
                     result.AddValue(withoutBrackets.Slice(indexOfColon + 1).ToString());
+                }
+
+                if (directive.IsTerminating)
+                {
+                    _primarySymbol = directive;
+                    _isTerminatingDirectiveSpecified = true;
                 }
 
                 //if (directive.Action is not null)

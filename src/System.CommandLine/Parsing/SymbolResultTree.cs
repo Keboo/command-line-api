@@ -80,7 +80,7 @@ namespace System.CommandLine.Parsing
         {
             if (_symbolsByName is null)
             {
-                _symbolsByName = new();  
+                _symbolsByName = new();
                 PopulateSymbolsByName(_rootCommand);
             }
           

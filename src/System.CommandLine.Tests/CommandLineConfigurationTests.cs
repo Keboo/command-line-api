@@ -289,7 +289,6 @@ public class CustomAppConfiguration : CliConfiguration
 {
     public CustomAppConfiguration(CliRootCommand command) : base(command)
     {
-        EnableDefaultExceptionHandler = false;
     }
 
     public IServiceProvider ServiceProvider { get; }

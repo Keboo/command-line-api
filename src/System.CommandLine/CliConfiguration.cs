@@ -56,11 +56,6 @@ namespace System.CommandLine
         public bool EnablePosixBundling { get; set; } = true;
 
         /// <summary>
-        /// Enables a default exception handler to catch any unhandled exceptions thrown during invocation. Enabled by default.
-        /// </summary>
-        public bool EnableDefaultExceptionHandler { get; set; } = true;
-
-        /// <summary>
         /// Enables signaling and handling of process termination (Ctrl+C, SIGINT, SIGTERM) via a <see cref="CancellationToken"/> 
         /// that can be passed to a <see cref="CliAction"/> during invocation.
         /// If not provided, a default timeout of 2 seconds is enforced.

@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(TargetFrameworkForNETSDK);net462</TargetFrameworks>
-    <GenerateProgramFile>false</GenerateProgramFile>
     <DefaultExcludesInProjectFolder>$(DefaultExcludesInProjectFolder);TestApps\**</DefaultExcludesInProjectFolder>
   </PropertyGroup>
   
@@ -14,7 +13,6 @@
   <ItemGroup>
     <Compile Include="..\Common\ArgumentBuilder.cs" Link="Utility\ArgumentBuilder.cs" />
     <Compile Include="..\Common\OptionBuilder.cs" Link="Utility\OptionBuilder.cs" />
-    <Compile Include="..\System.CommandLine.Suggest\DotnetMuxer.cs" Link="Utility\DotnetMuxer.cs" />
     <Compile Include="..\System.CommandLine\LocalizationResources.cs" Link="LocalizationResources.cs" />
     <Compile Include="..\System.CommandLine\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
   </ItemGroup>
@@ -35,8 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\System.CommandLine\Properties\Resources.resx"
-                      LogicalName="System.CommandLine.Properties.Resources.resources" />
+    <EmbeddedResource Include="..\System.CommandLine\Properties\Resources.resx" LogicalName="System.CommandLine.Properties.Resources.resources" />
   </ItemGroup>
 
 </Project>

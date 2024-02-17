@@ -1,18 +1,22 @@
-﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
+// Copyright (c) .NET Foundation and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#if NET6_0_OR_GREATER
 using System.Reflection;
+#endif
 
 namespace System.CommandLine.Utility;
 
 internal static class OptionBuilder
 {
+#if NET6_0_OR_GREATER
     private static readonly ConstructorInfo _ctor;
 
     static OptionBuilder()
     {
         _ctor = typeof(CliOption<string>).GetConstructor(new[] { typeof(string), typeof(string[]) });
     }
+#endif
 
     internal static CliOption CreateOption(string name, Type valueType, string description = null)
     {
@@ -31,30 +35,4 @@ internal static class OptionBuilder
         return option;
     }
 
-    internal static CliOption CreateOption(string name, Type valueType, string description, Func<object> defaultValueFactory)
-    {
-        if (defaultValueFactory == null)
-        {
-            return CreateOption(name, valueType, description);
-        }
-
-        var optionType = typeof(Bridge<>).MakeGenericType(valueType);
-
-        var ctor = optionType.GetConstructor(new[] { typeof(string), typeof(Func<object>), typeof(string) });
-
-        var option = (CliOption)ctor.Invoke(new object[] { name, defaultValueFactory, description });
-
-        return option;
-    }
-
-    private sealed class Bridge<T> : CliOption<T>
-    {
-        public Bridge(string name, Func<object> defaultValueFactory, string description)
-            : base(name)
-        {
-            // this type exists only for an easy Func<object> => Func<T> transformation
-            DefaultValueFactory = (_) => (T)defaultValueFactory();
-            Description = description;
-        }
-    }
 }

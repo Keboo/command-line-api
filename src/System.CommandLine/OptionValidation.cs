@@ -4,58 +4,57 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace System.CommandLine
+namespace System.CommandLine;
+
+/// <summary>
+/// Provides extension methods for <see cref="CliOption" />.
+/// </summary>
+public static class OptionValidation
 {
     /// <summary>
-    /// Provides extension methods for <see cref="CliOption" />.
+    /// Configures an option to accept only values corresponding to an existing file.
     /// </summary>
-    public static class OptionValidation
+    /// <param name="option">The option to configure.</param>
+    /// <returns>The option being extended.</returns>
+    public static CliOption<FileInfo> AcceptExistingOnly(this CliOption<FileInfo> option)
     {
-        /// <summary>
-        /// Configures an option to accept only values corresponding to an existing file.
-        /// </summary>
-        /// <param name="option">The option to configure.</param>
-        /// <returns>The option being extended.</returns>
-        public static CliOption<FileInfo> AcceptExistingOnly(this CliOption<FileInfo> option)
-        {
-            option._argument.AcceptExistingOnly();
+        option._argument.AcceptExistingOnly();
 
-            return option;
-        }
+        return option;
+    }
 
-        /// <summary>
-        /// Configures an option to accept only values corresponding to an existing directory.
-        /// </summary>
-        /// <param name="option">The option to configure.</param>
-        /// <returns>The option being extended.</returns>
-        public static CliOption<DirectoryInfo> AcceptExistingOnly(this CliOption<DirectoryInfo> option)
-        {
-            option._argument.AcceptExistingOnly();
-            return option;
-        }
+    /// <summary>
+    /// Configures an option to accept only values corresponding to an existing directory.
+    /// </summary>
+    /// <param name="option">The option to configure.</param>
+    /// <returns>The option being extended.</returns>
+    public static CliOption<DirectoryInfo> AcceptExistingOnly(this CliOption<DirectoryInfo> option)
+    {
+        option._argument.AcceptExistingOnly();
+        return option;
+    }
 
-        /// <summary>
-        /// Configures an option to accept only values corresponding to an existing file or directory.
-        /// </summary>
-        /// <param name="option">The option to configure.</param>
-        /// <returns>The option being extended.</returns>
-        public static CliOption<FileSystemInfo> AcceptExistingOnly(this CliOption<FileSystemInfo> option)
-        {
-            option._argument.AcceptExistingOnly();
-            return option;
-        }
+    /// <summary>
+    /// Configures an option to accept only values corresponding to an existing file or directory.
+    /// </summary>
+    /// <param name="option">The option to configure.</param>
+    /// <returns>The option being extended.</returns>
+    public static CliOption<FileSystemInfo> AcceptExistingOnly(this CliOption<FileSystemInfo> option)
+    {
+        option._argument.AcceptExistingOnly();
+        return option;
+    }
 
-        /// <summary>
-        /// Configures an option to accept only values corresponding to a existing files or directories.
-        /// </summary>
-        /// <param name="option">The option to configure.</param>
-        /// <returns>The option being extended.</returns>
-        public static CliOption<T> AcceptExistingOnly<T>(this CliOption<T> option)
-            where T : IEnumerable<FileSystemInfo>
-        {
-            option._argument.AcceptExistingOnly();
+    /// <summary>
+    /// Configures an option to accept only values corresponding to a existing files or directories.
+    /// </summary>
+    /// <param name="option">The option to configure.</param>
+    /// <returns>The option being extended.</returns>
+    public static CliOption<T> AcceptExistingOnly<T>(this CliOption<T> option)
+        where T : IEnumerable<FileSystemInfo>
+    {
+        option._argument.AcceptExistingOnly();
 
-            return option;
-        }
+        return option;
     }
 }

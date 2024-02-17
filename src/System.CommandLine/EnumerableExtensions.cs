@@ -4,48 +4,47 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace System.CommandLine
+namespace System.CommandLine;
+
+/// <summary>
+/// Provides a set of <see langword="static"/> methods for querying objects that implement <see cref="IEnumerable"/>.
+/// </summary>
+internal static class EnumerableExtensions
 {
-    /// <summary>
-    /// Provides a set of <see langword="static"/> methods for querying objects that implement <see cref="IEnumerable"/>.
-    /// </summary>
-    internal static class EnumerableExtensions
+    internal static IEnumerable<T> FlattenBreadthFirst<T>(
+        this IEnumerable<T> source,
+        Func<T, IEnumerable<T>> children)
     {
-        internal static IEnumerable<T> FlattenBreadthFirst<T>(
-            this IEnumerable<T> source,
-            Func<T, IEnumerable<T>> children)
+        var queue = new Queue<T>();
+
+        foreach (var item in source)
         {
-            var queue = new Queue<T>();
-
-            foreach (var item in source)
-            {
-                queue.Enqueue(item);
-            }
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-
-                foreach (var option in children(current))
-                {
-                    queue.Enqueue(option);
-                }
-
-                yield return current;
-            }
+            queue.Enqueue(item);
         }
 
-        internal static IEnumerable<T> RecurseWhileNotNull<T>(
-            this T? source,
-            Func<T, T?> next)
-            where T : class
+        while (queue.Count > 0)
         {
-            while (source is not null)
-            {
-                yield return source;
+            var current = queue.Dequeue();
 
-                source = next(source);
+            foreach (var option in children(current))
+            {
+                queue.Enqueue(option);
             }
+
+            yield return current;
+        }
+    }
+
+    internal static IEnumerable<T> RecurseWhileNotNull<T>(
+        this T? source,
+        Func<T, T?> next)
+        where T : class
+    {
+        while (source is not null)
+        {
+            yield return source;
+
+            source = next(source);
         }
     }
 }

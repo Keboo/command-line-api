@@ -3,390 +3,389 @@
 
 using System.Collections.Generic;
 
-namespace System.CommandLine.Parsing
+namespace System.CommandLine.Parsing;
+
+internal sealed class ParseOperation
 {
-    internal sealed class ParseOperation
+    private readonly List<CliToken> _tokens;
+    private readonly CliConfiguration _configuration;
+    private readonly string? _rawInput;
+    private readonly SymbolResultTree _symbolResultTree;
+    private readonly CommandResult _rootCommandResult;
+
+    private int _index;
+    private CommandResult _innermostCommandResult;
+    private bool _isHelpRequested;
+    private bool _isTerminatingDirectiveSpecified;
+    private CliSymbol? _primarySymbol;
+    //private CliAction? _primaryAction;
+    //private List<CliAction>? _preActions;
+
+    public ParseOperation(
+        List<CliToken> tokens,
+        CliConfiguration configuration,
+        List<string>? tokenizeErrors,
+        string? rawInput)
     {
-        private readonly List<CliToken> _tokens;
-        private readonly CliConfiguration _configuration;
-        private readonly string? _rawInput;
-        private readonly SymbolResultTree _symbolResultTree;
-        private readonly CommandResult _rootCommandResult;
+        _tokens = tokens;
+        _configuration = configuration;
+        _rawInput = rawInput;
+        _symbolResultTree = new(_configuration.RootCommand, tokenizeErrors);
+        _innermostCommandResult = _rootCommandResult = new CommandResult(
+            _configuration.RootCommand,
+            CurrentToken,
+            _symbolResultTree);
+        _symbolResultTree.Add(_configuration.RootCommand, _rootCommandResult);
 
-        private int _index;
-        private CommandResult _innermostCommandResult;
-        private bool _isHelpRequested;
-        private bool _isTerminatingDirectiveSpecified;
-        private CliSymbol? _primarySymbol;
-        //private CliAction? _primaryAction;
-        //private List<CliAction>? _preActions;
+        Advance();
+    }
 
-        public ParseOperation(
-            List<CliToken> tokens,
-            CliConfiguration configuration,
-            List<string>? tokenizeErrors,
-            string? rawInput)
+    private CliToken CurrentToken => _tokens[_index];
+
+    private void Advance() => _index++;
+
+    private bool More(out CliTokenType currentTokenType)
+    {
+        bool result = _index < _tokens.Count;
+        currentTokenType = result ? _tokens[_index].Type : (CliTokenType)(-1);
+        return result;
+    }
+
+    internal ParseResult Parse()
+    {
+        ParseDirectives();
+
+        ParseCommandChildren();
+
+        if (!_isHelpRequested)
         {
-            _tokens = tokens;
-            _configuration = configuration;
-            _rawInput = rawInput;
-            _symbolResultTree = new(_configuration.RootCommand, tokenizeErrors);
-            _innermostCommandResult = _rootCommandResult = new CommandResult(
-                _configuration.RootCommand,
-                CurrentToken,
-                _symbolResultTree);
-            _symbolResultTree.Add(_configuration.RootCommand, _rootCommandResult);
-
-            Advance();
+            Validate();
         }
 
-        private CliToken CurrentToken => _tokens[_index];
+        //if (_primaryAction is null)
+        //{
+        //    if (_symbolResultTree.ErrorCount > 0)
+        //    {
+        //        _primaryAction = new ParseErrorAction();
+        //    }
+        //}
 
-        private void Advance() => _index++;
+        return new(
+            _configuration,
+            _rootCommandResult,
+            _innermostCommandResult,
+            _tokens,
+            _symbolResultTree.UnmatchedTokens,
+            _symbolResultTree.Errors,
+            _rawInput,
+            _primarySymbol
+            //_primaryAction,
+            //_preActions);
+            );
+    }
 
-        private bool More(out CliTokenType currentTokenType)
+    private void ParseSubcommand()
+    {
+        CliCommand command = (CliCommand)CurrentToken.Symbol!;
+
+        _innermostCommandResult = new CommandResult(
+            command,
+            CurrentToken,
+            _symbolResultTree,
+            _innermostCommandResult);
+
+        _symbolResultTree.Add(command, _innermostCommandResult);
+
+        Advance();
+
+        ParseCommandChildren();
+    }
+
+    private void ParseCommandChildren()
+    {
+        int currentArgumentCount = 0;
+        int currentArgumentIndex = 0;
+
+        while (More(out CliTokenType currentTokenType))
         {
-            bool result = _index < _tokens.Count;
-            currentTokenType = result ? _tokens[_index].Type : (CliTokenType)(-1);
-            return result;
-        }
-
-        internal ParseResult Parse()
-        {
-            ParseDirectives();
-
-            ParseCommandChildren();
-
-            if (!_isHelpRequested)
+            if (currentTokenType == CliTokenType.Command)
             {
-                Validate();
+                ParseSubcommand();
             }
-
-            //if (_primaryAction is null)
-            //{
-            //    if (_symbolResultTree.ErrorCount > 0)
-            //    {
-            //        _primaryAction = new ParseErrorAction();
-            //    }
-            //}
-
-            return new(
-                _configuration,
-                _rootCommandResult,
-                _innermostCommandResult,
-                _tokens,
-                _symbolResultTree.UnmatchedTokens,
-                _symbolResultTree.Errors,
-                _rawInput,
-                _primarySymbol
-                //_primaryAction,
-                //_preActions);
-                );
-        }
-
-        private void ParseSubcommand()
-        {
-            CliCommand command = (CliCommand)CurrentToken.Symbol!;
-
-            _innermostCommandResult = new CommandResult(
-                command,
-                CurrentToken,
-                _symbolResultTree,
-                _innermostCommandResult);
-
-            _symbolResultTree.Add(command, _innermostCommandResult);
-
-            Advance();
-
-            ParseCommandChildren();
-        }
-
-        private void ParseCommandChildren()
-        {
-            int currentArgumentCount = 0;
-            int currentArgumentIndex = 0;
-
-            while (More(out CliTokenType currentTokenType))
+            else if (currentTokenType == CliTokenType.Option)
             {
-                if (currentTokenType == CliTokenType.Command)
-                {
-                    ParseSubcommand();
-                }
-                else if (currentTokenType == CliTokenType.Option)
-                {
-                    ParseOption();
-                }
-                else if (currentTokenType == CliTokenType.Argument)
-                {
-                    ParseCommandArguments(ref currentArgumentCount, ref currentArgumentIndex);
-                }
-                else
-                {
-                    AddCurrentTokenToUnmatched();
-                    Advance();
-                }
+                ParseOption();
             }
-        }
-
-        private void ParseCommandArguments(ref int currentArgumentCount, ref int currentArgumentIndex)
-        {
-            while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Argument)
+            else if (currentTokenType == CliTokenType.Argument)
             {
-                while (_innermostCommandResult.Command.HasArguments && currentArgumentIndex < _innermostCommandResult.Command.Arguments.Count)
-                {
-                    CliArgument argument = _innermostCommandResult.Command.Arguments[currentArgumentIndex];
-
-                    if (currentArgumentCount < argument.Arity.MaximumNumberOfValues)
-                    {
-                        if (CurrentToken.Symbol is null)
-                        {
-                            // update the token with missing information now, so later stages don't need to modify it
-                            CurrentToken.Symbol = argument;
-                        }
-
-                        if (!(_symbolResultTree.TryGetValue(argument, out var symbolResult)
-                            && symbolResult is ArgumentResult argumentResult))
-                        {
-                            argumentResult =
-                                new ArgumentResult(
-                                    argument,
-                                    _symbolResultTree,
-                                    _innermostCommandResult);
-
-                            _symbolResultTree.Add(argument, argumentResult);
-                        }
-
-                        argumentResult.AddToken(CurrentToken);
-                        _innermostCommandResult.AddToken(CurrentToken);
-
-                        currentArgumentCount++;
-
-                        Advance();
-
-                        break;
-                    }
-                    else
-                    {
-                        currentArgumentCount = 0;
-                        currentArgumentIndex++;
-                    }
-                }
-
-                if (currentArgumentCount == 0) // no matching arguments found
-                {
-                    AddCurrentTokenToUnmatched();
-                    Advance();
-                }
-            }
-        }
-
-        private void ParseOption()
-        {
-            CliOption option = (CliOption)CurrentToken.Symbol!;
-            OptionResult optionResult;
-
-            if (!_symbolResultTree.TryGetValue(option, out SymbolResult? symbolResult))
-            {
-                //if (option.Action is not null)
-                //{
-                //    // directives have a precedence over --help and --version
-                //    if (!_isTerminatingDirectiveSpecified)
-                //    {
-                //        // TODO: ouch
-                //        // if (option is HelpOption)
-                //        // {
-                //        //     _isHelpRequested = true;
-                //        // }
-
-                //        if (option.Action.Terminating)
-                //        {
-                //            _primaryAction = option.Action;
-                //        }
-                //        else
-                //        {
-                //            AddPreAction(option.Action);
-                //        }
-                //    }
-                //}
-
-                optionResult = new OptionResult(
-                    option,
-                    _symbolResultTree,
-                    CurrentToken,
-                    _innermostCommandResult);
-
-                _symbolResultTree.Add(option, optionResult);
+                ParseCommandArguments(ref currentArgumentCount, ref currentArgumentIndex);
             }
             else
             {
-                optionResult = (OptionResult)symbolResult;
+                AddCurrentTokenToUnmatched();
+                Advance();
             }
-
-            optionResult.IdentifierTokenCount++;
-
-            Advance();
-
-            ParseOptionArguments(optionResult);
         }
+    }
 
-        private void ParseOptionArguments(OptionResult optionResult)
+    private void ParseCommandArguments(ref int currentArgumentCount, ref int currentArgumentIndex)
+    {
+        while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Argument)
         {
-            var argument = optionResult.Option.Argument;
-
-            var contiguousTokens = 0;
-            int argumentCount = 0;
-
-            while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Argument)
+            while (_innermostCommandResult.Command.HasArguments && currentArgumentIndex < _innermostCommandResult.Command.Arguments.Count)
             {
-                if (argumentCount >= argument.Arity.MaximumNumberOfValues)
+                CliArgument argument = _innermostCommandResult.Command.Arguments[currentArgumentIndex];
+
+                if (currentArgumentCount < argument.Arity.MaximumNumberOfValues)
                 {
-                    if (contiguousTokens > 0)
+                    if (CurrentToken.Symbol is null)
                     {
-                        break;
+                        // update the token with missing information now, so later stages don't need to modify it
+                        CurrentToken.Symbol = argument;
                     }
 
-                    if (argument.Arity.MaximumNumberOfValues == 0)
+                    if (!(_symbolResultTree.TryGetValue(argument, out var symbolResult)
+                        && symbolResult is ArgumentResult argumentResult))
                     {
-                        break;
+                        argumentResult =
+                            new ArgumentResult(
+                                argument,
+                                _symbolResultTree,
+                                _innermostCommandResult);
+
+                        _symbolResultTree.Add(argument, argumentResult);
                     }
-                }
-                else if (argument.IsBoolean() && !bool.TryParse(CurrentToken.Value, out _))
-                {
-                    // Don't greedily consume the following token for bool. The presence of the option token (i.e. a flag) is sufficient.
+
+                    argumentResult.AddToken(CurrentToken);
+                    _innermostCommandResult.AddToken(CurrentToken);
+
+                    currentArgumentCount++;
+
+                    Advance();
+
                     break;
-                }
-
-                if (!(_symbolResultTree.TryGetValue(argument, out SymbolResult? symbolResult)
-                    && symbolResult is ArgumentResult argumentResult))
-                {
-                    argumentResult = new ArgumentResult(
-                            argument,
-                            _symbolResultTree,
-                            optionResult);
-
-                    _symbolResultTree.Add(argument, argumentResult);
-                }
-
-                argumentResult.AddToken(CurrentToken);
-                optionResult.AddToken(CurrentToken);
-
-                argumentCount++;
-
-                contiguousTokens++;
-
-                Advance();
-
-                if (!optionResult.Option.AllowMultipleArgumentsPerToken)
-                {
-                    return;
-                }
-            }
-
-            if (argumentCount == 0)
-            {
-                if (!_symbolResultTree.ContainsKey(argument))
-                {
-                    var argumentResult = new ArgumentResult(argument, _symbolResultTree, optionResult);
-                    _symbolResultTree.Add(argument, argumentResult);
-                }
-            }
-        }
-
-        private void ParseDirectives()
-        {
-            while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Directive)
-            {
-                if (_configuration.HasDirectives)
-                {
-                    ParseDirective(); // kept in separate method to avoid JIT
-                }
-
-                Advance();
-            }
-
-            void ParseDirective()
-            {
-                var token = CurrentToken;
-
-                if (token.Symbol is not CliDirective directive)
-                {
-                    AddCurrentTokenToUnmatched();
-                    return;
-                }
-
-                DirectiveResult result;
-                if (_symbolResultTree.TryGetValue(directive, out var directiveResult))
-                {
-                    result = (DirectiveResult)directiveResult;
-                    result.AddToken(token);
                 }
                 else
                 {
-                    result = new (directive, token, _symbolResultTree);
-                    _symbolResultTree.Add(directive, result);
+                    currentArgumentCount = 0;
+                    currentArgumentIndex++;
                 }
+            }
 
-                ReadOnlySpan<char> withoutBrackets = token.Value.AsSpan(1, token.Value.Length - 2);
-                int indexOfColon = withoutBrackets.IndexOf(':');
-                if (indexOfColon > 0)
-                {
-                    result.AddValue(withoutBrackets.Slice(indexOfColon + 1).ToString());
-                }
-
-                if (directive.IsTerminating)
-                {
-                    _primarySymbol = directive;
-                    _isTerminatingDirectiveSpecified = true;
-                }
-
-                //if (directive.Action is not null)
-                //{
-                //    if (directive.Action.Terminating)
-                //    {
-                //        _primaryAction = directive.Action;
-                //        _isTerminatingDirectiveSpecified = true;
-                //    }
-                //    else
-                //    {
-                //        AddPreAction(directive.Action);
-                //    }
-                //}
+            if (currentArgumentCount == 0) // no matching arguments found
+            {
+                AddCurrentTokenToUnmatched();
+                Advance();
             }
         }
+    }
 
-        //private void AddPreAction(CliAction action)
-        //{
-        //    if (_preActions is null)
-        //    {
-        //        _preActions = new();
-        //    }
+    private void ParseOption()
+    {
+        CliOption option = (CliOption)CurrentToken.Symbol!;
+        OptionResult optionResult;
 
-        //    _preActions.Add(action);
-        //}
-
-        private void AddCurrentTokenToUnmatched()
+        if (!_symbolResultTree.TryGetValue(option, out SymbolResult? symbolResult))
         {
-            if (CurrentToken.Type == CliTokenType.DoubleDash)
+            //if (option.Action is not null)
+            //{
+            //    // directives have a precedence over --help and --version
+            //    if (!_isTerminatingDirectiveSpecified)
+            //    {
+            //        // TODO: ouch
+            //        // if (option is HelpOption)
+            //        // {
+            //        //     _isHelpRequested = true;
+            //        // }
+
+            //        if (option.Action.Terminating)
+            //        {
+            //            _primaryAction = option.Action;
+            //        }
+            //        else
+            //        {
+            //            AddPreAction(option.Action);
+            //        }
+            //    }
+            //}
+
+            optionResult = new OptionResult(
+                option,
+                _symbolResultTree,
+                CurrentToken,
+                _innermostCommandResult);
+
+            _symbolResultTree.Add(option, optionResult);
+        }
+        else
+        {
+            optionResult = (OptionResult)symbolResult;
+        }
+
+        optionResult.IdentifierTokenCount++;
+
+        Advance();
+
+        ParseOptionArguments(optionResult);
+    }
+
+    private void ParseOptionArguments(OptionResult optionResult)
+    {
+        var argument = optionResult.Option.Argument;
+
+        var contiguousTokens = 0;
+        int argumentCount = 0;
+
+        while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Argument)
+        {
+            if (argumentCount >= argument.Arity.MaximumNumberOfValues)
+            {
+                if (contiguousTokens > 0)
+                {
+                    break;
+                }
+
+                if (argument.Arity.MaximumNumberOfValues == 0)
+                {
+                    break;
+                }
+            }
+            else if (argument.IsBoolean() && !bool.TryParse(CurrentToken.Value, out _))
+            {
+                // Don't greedily consume the following token for bool. The presence of the option token (i.e. a flag) is sufficient.
+                break;
+            }
+
+            if (!(_symbolResultTree.TryGetValue(argument, out SymbolResult? symbolResult)
+                && symbolResult is ArgumentResult argumentResult))
+            {
+                argumentResult = new ArgumentResult(
+                        argument,
+                        _symbolResultTree,
+                        optionResult);
+
+                _symbolResultTree.Add(argument, argumentResult);
+            }
+
+            argumentResult.AddToken(CurrentToken);
+            optionResult.AddToken(CurrentToken);
+
+            argumentCount++;
+
+            contiguousTokens++;
+
+            Advance();
+
+            if (!optionResult.Option.AllowMultipleArgumentsPerToken)
             {
                 return;
             }
-
-            _symbolResultTree.AddUnmatchedToken(CurrentToken, _innermostCommandResult, _rootCommandResult);
         }
 
-        private void Validate()
+        if (argumentCount == 0)
         {
-            // Only the inner most command goes through complete validation,
-            // for other commands only a subset of options is checked.
-            _innermostCommandResult.Validate(completeValidation: true);
-
-            CommandResult? currentResult = _innermostCommandResult.Parent as CommandResult;
-            while (currentResult is not null)
+            if (!_symbolResultTree.ContainsKey(argument))
             {
-                currentResult.Validate(completeValidation: false);
-
-                currentResult = currentResult.Parent as CommandResult;
+                var argumentResult = new ArgumentResult(argument, _symbolResultTree, optionResult);
+                _symbolResultTree.Add(argument, argumentResult);
             }
+        }
+    }
+
+    private void ParseDirectives()
+    {
+        while (More(out CliTokenType currentTokenType) && currentTokenType == CliTokenType.Directive)
+        {
+            if (_configuration.HasDirectives)
+            {
+                ParseDirective(); // kept in separate method to avoid JIT
+            }
+
+            Advance();
+        }
+
+        void ParseDirective()
+        {
+            var token = CurrentToken;
+
+            if (token.Symbol is not CliDirective directive)
+            {
+                AddCurrentTokenToUnmatched();
+                return;
+            }
+
+            DirectiveResult result;
+            if (_symbolResultTree.TryGetValue(directive, out var directiveResult))
+            {
+                result = (DirectiveResult)directiveResult;
+                result.AddToken(token);
+            }
+            else
+            {
+                result = new (directive, token, _symbolResultTree);
+                _symbolResultTree.Add(directive, result);
+            }
+
+            ReadOnlySpan<char> withoutBrackets = token.Value.AsSpan(1, token.Value.Length - 2);
+            int indexOfColon = withoutBrackets.IndexOf(':');
+            if (indexOfColon > 0)
+            {
+                result.AddValue(withoutBrackets.Slice(indexOfColon + 1).ToString());
+            }
+
+            if (directive.IsTerminating)
+            {
+                _primarySymbol = directive;
+                _isTerminatingDirectiveSpecified = true;
+            }
+
+            //if (directive.Action is not null)
+            //{
+            //    if (directive.Action.Terminating)
+            //    {
+            //        _primaryAction = directive.Action;
+            //        _isTerminatingDirectiveSpecified = true;
+            //    }
+            //    else
+            //    {
+            //        AddPreAction(directive.Action);
+            //    }
+            //}
+        }
+    }
+
+    //private void AddPreAction(CliAction action)
+    //{
+    //    if (_preActions is null)
+    //    {
+    //        _preActions = new();
+    //    }
+
+    //    _preActions.Add(action);
+    //}
+
+    private void AddCurrentTokenToUnmatched()
+    {
+        if (CurrentToken.Type == CliTokenType.DoubleDash)
+        {
+            return;
+        }
+
+        _symbolResultTree.AddUnmatchedToken(CurrentToken, _innermostCommandResult, _rootCommandResult);
+    }
+
+    private void Validate()
+    {
+        // Only the inner most command goes through complete validation,
+        // for other commands only a subset of options is checked.
+        _innermostCommandResult.Validate(completeValidation: true);
+
+        CommandResult? currentResult = _innermostCommandResult.Parent as CommandResult;
+        while (currentResult is not null)
+        {
+            currentResult.Validate(completeValidation: false);
+
+            currentResult = currentResult.Parent as CommandResult;
         }
     }
 }

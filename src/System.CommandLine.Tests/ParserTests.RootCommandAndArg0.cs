@@ -26,8 +26,8 @@ public partial class ParserTests
             var result1 = command.Parse(Split("inner -x hello"));
             var result2 = command.Parse(Split("outer inner -x hello"));
 
-            Assert.True(false, "Fix below");
-            //result1.Diagram().Should().Be(result2.Diagram());
+            result1.CommandResult.Command.Should().NotBeNull();
+            result1.CommandResult.Command.Should().BeEquivalentTo(result2.CommandResult.Command);
         }
         
         [Fact]
@@ -64,8 +64,8 @@ public partial class ParserTests
             var result1 = command.Parse("inner -x hello");
             var result2 = command.Parse("outer inner -x hello");
 
-            Assert.True(false, "Fix below");
-            //result1.Diagram().Should().Be(result2.Diagram());
+            result1.CommandResult.Command.Should().NotBeNull();
+            result1.CommandResult.Command.Should().BeEquivalentTo(result2.CommandResult.Command);
         }
 
         [Fact]

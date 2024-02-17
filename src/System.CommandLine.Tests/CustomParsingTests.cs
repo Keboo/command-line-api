@@ -147,7 +147,7 @@ public class CustomParsingTests
     }
 
     [Fact]
-    public void custom_parsing_of_scalar_value_from_an_argument_with_one_token()
+    public void Custom_parsing_of_scalar_value_from_an_argument_with_one_token()
     {
         var argument = new CliArgument<int>("arg")
         {
@@ -161,7 +161,7 @@ public class CustomParsingTests
     }
 
     [Fact]
-    public void custom_parsing_of_sequence_value_from_an_argument_with_one_token()
+    public void Custom_parsing_of_sequence_value_from_an_argument_with_one_token()
     {
         var argument = new CliArgument<IEnumerable<int>>("arg")
         {
@@ -175,7 +175,7 @@ public class CustomParsingTests
     }
 
     [Fact]
-    public void custom_parsing_of_sequence_value_from_an_argument_with_multiple_tokens()
+    public void Custom_parsing_of_sequence_value_from_an_argument_with_multiple_tokens()
     {
         var argument = new CliArgument<IEnumerable<int>>("arg")
         {
@@ -189,7 +189,7 @@ public class CustomParsingTests
     }
 
     [Fact]
-    public void custom_parsing_of_scalar_value_from_an_argument_with_multiple_tokens()
+    public void Custom_parsing_of_scalar_value_from_an_argument_with_multiple_tokens()
     {
         var argument = new CliArgument<int>("arg")
         {
@@ -330,10 +330,9 @@ public class CustomParsingTests
     }
 
     [Fact]
-    public async Task Custom_argument_parser_is_only_called_once()
+    public void Custom_argument_parser_is_only_called_once()
     {
         var callCount = 0;
-        var handlerWasCalled = false;
 
         var option = new CliOption<int>("--value")
         {
@@ -345,13 +344,13 @@ public class CustomParsingTests
         };
 
         var command = new CliRootCommand();
-        //command.SetAction((ctx) => handlerWasCalled = true);
         command.Options.Add(option);
 
-        //await command.Parse("--value 42").InvokeAsync();
+        var parseResult = command.Parse("--value 42");
+        var value = parseResult.GetValue(option);
 
         callCount.Should().Be(1);
-        handlerWasCalled.Should().BeTrue();
+        value.Should().Be(42);
     }
 
     [Fact]
@@ -587,7 +586,7 @@ public class CustomParsingTests
     [InlineData("--bananas argument-is-specified", "argument-is-specified")]
     public void Custom_parser_when_configured_as_default_value_factory_is_called_when_Option_Arity_allows_zero_tokens(string commandLine, string expectedValue)
     {
-        Func<ArgumentResult, string> both = (result) =>
+        static string Both(ArgumentResult result)
         {
             if (result.Tokens.Count == 0)
             {
@@ -602,12 +601,12 @@ public class CustomParsingTests
             {
                 return result.Tokens[0].Value;
             }
-        };
+        }
 
         var opt = new CliOption<string>("--bananas")
         {
-            DefaultValueFactory = both,
-            CustomParser = both,
+            DefaultValueFactory = Both,
+            CustomParser = Both,
             Arity = ArgumentArity.ZeroOrOne
         };
 
